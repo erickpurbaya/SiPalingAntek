@@ -1,4 +1,5 @@
 # Si Paling Antek: Japanese
+Instruksikan dirimu belajar bahasa baru.
 
 Website for learning Japanese for Indonesia gamified. The project is currently under development.
 Feaure you could expect:
