@@ -1,51 +1,41 @@
 import { useState, useRef, useEffect } from "react";
-import { kanaList, type Kana } from "../syllabary";
+import { Link } from "react-router-dom";
+import { type Kana } from "../syllabary";
+import { generateQuestion, getKanaList } from "../utilities/quiz";
+import { AnswerSound } from "../utilities/quiz";
+import { CapitalizeFirstWord } from "../utilities/general";
 import "../style.css";
 
-function getRandomItem<T>(items: T[]): T {
-  return items[Math.floor(Math.random() * items.length)];
-}
+const variationChoice = ['handakuten', 'dakuten'];
 
-function shuffle<T>(items: T[]): T[] {
-  return [...items].sort(() => Math.random() - 0.5);
-}
+export default function BasicKana({ 
+    type = 'hiragana',
+    variation = ['basic'] 
+  } : { 
+    type?: string,
+    variation?: string[] }
+  ) {
+  
+  const [kanaVariations, setKanaVariations] = useState<string[]>(variation) // Checkboxes for kana variations
+  const [previousVariations, setPreviousVariation] = useState<string[]>(variation) // Check if the requested variations the same as before
 
-const hiraganaList = kanaList.filter(
-  kana => kana.type === "hiragana"
-);
+  const [requestedKana, setRequestedKana] = useState<Kana[]>(getKanaList(type, kanaVariations));
+  
+  const playCorrect = useSound(AnswerSound.correct);
+  const playCorrectStreak = useSound(AnswerSound.streak);
+  const playWrong = useSound(AnswerSound.incorrect);
 
-function generateQuestion() {
-  const correct = getRandomItem(hiraganaList);
-
-  const wrongAnswers = shuffle(
-    hiraganaList.filter(
-      kana => kana.kana !== correct.kana
-    )
-  ).slice(0, 3);
-
-  const answers = shuffle([
-    correct,
-    ...wrongAnswers,
-  ]);
-
-  return {
-    correct,
-    answers,
-  };
-}
-
-export default function Hiragana() {
-  const playCorrect = useSound('/sounds/benar.mp3');
-  const playCorrectStreak = useSound('/sounds/benar-streak.mp3');
-  const playWrong = useSound('/sounds/salah.mp3');
-
-  const [typeAnswer, setTypeAnswer] = useState<string>();
+  const [typeAnswer, setTypeAnswer] = useState<string>("");
   const [correctStreak, setCcorrectStreaj] = useState<number>(0);
   const [wrongIndicator, setWrongIndicator] = useState<boolean>(false);
   const [questionNo, setQuestionNo] = useState(1);
   const [question, setQuestion] = useState(
-    generateQuestion()
+    getQuestion()
   );
+ 
+  function getQuestion() {
+    return generateQuestion(requestedKana);
+  }
 
   function useSound(path: string) {
     const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -68,7 +58,7 @@ export default function Hiragana() {
   function nextQuestion() {
     setCcorrectStreaj(prev => prev + 1)
     setQuestionNo(prev => prev + 1);
-    setQuestion(generateQuestion());
+    setQuestion(getQuestion());
     setTypeAnswer("");
     setWrongIndicator(false);
   }
@@ -76,7 +66,7 @@ export default function Hiragana() {
   function handleAnswer(selected: Kana) {
     if (selected.kana === question.correct.kana) {
       setQuestionNo(prev => prev + 1);
-      setQuestion(generateQuestion());
+      setQuestion(getQuestion());
     } else {
       alert("Wrong!");
     }
@@ -102,11 +92,47 @@ export default function Hiragana() {
     }
   }
 
+  function renewList() {
+    const newKanaList = getKanaList(type, kanaVariations);
+    
+    // Renew kana list
+    setRequestedKana(newKanaList);
+    setQuestion(getQuestion())
+
+    // Remember previously requested variations, to diable request button.
+    setPreviousVariation(kanaVariations); 
+  }
+
   return (
-    <div>
+    <div className="flex flex-col h-full min-h-screen">
       <h1 className="text-3xl font-bold mb-8">
-        Hiragana Quiz
+        {CapitalizeFirstWord(type)} Quiz
+        <div className="text-lg text-slate-600 flex gap-3 justify-center">
+          {/* {CapitalizeFirstWord(variation)} */}
+          {variationChoice.map((choice) => (
+            <label key={choice}>
+              <input
+                type='checkbox'
+                checked={kanaVariations.includes(choice)}
+                onClick={() => 
+                  setKanaVariations(prev =>
+                    prev.includes(choice)
+                      ? prev.filter(item => item !== choice)
+                      : [...prev, choice]
+                  ) 
+                }
+              /> 
+              {CapitalizeFirstWord(choice)} 
+            </label>
+          ))}
+        </div>
       </h1>
+      
+      <button 
+        onClick={renewList} 
+        className="text-white font-bold rounded-lg px-5 py-2 w-fit text-center">
+          Change
+      </button>
 
       <div className="flex flex-col items-center gap-6">
         <p>Question {questionNo}</p>
@@ -144,6 +170,10 @@ export default function Hiragana() {
             </button>
           ))}
         </div>
+      </div>
+
+      <div className="flex-1 flex items-end justify-center">
+        <Link to='/' className="bg-red-900 text-white font-bold rounded-sm px-5 py-2 my-4">Back to Hom</Link>
       </div>
     </div>
   );

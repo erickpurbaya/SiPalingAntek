@@ -7,8 +7,7 @@ import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './style.css'
 import Home from "./pages/Home";
-import HiraganaQuiz from "./pages/Hiragana";
-import KatakanaQuiz from "./pages/Katakana";
+import BasicKana from "./pages/Basic";
 
 function App() {
   return (
@@ -16,14 +15,35 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<Home />} />
+
+          {/* HIRAGANA ROUTE */}
           <Route 
             path='/quiz/hiragana' 
-            element={<HiraganaQuiz />} 
+            element={<BasicKana type='hiragana' />} 
           />
           <Route 
-            path='/quiz/katakana' 
-            element={<KatakanaQuiz />} 
+            path='/quiz/hiragana-dakuten' 
+            element={<BasicKana type='hiragana' variation={['dakuten']} />} 
           />
+          <Route 
+            path='/quiz/hiragana-handakuten' 
+            element={<BasicKana type='hiragana' variation={['handakuten']} />} 
+          />
+
+          {/* KATAKANA ROUTE */}
+          <Route 
+            path='/quiz/katakana' 
+            element={<BasicKana type='katakana' />} 
+          />
+          <Route 
+            path='/quiz/katakana-dakuten' 
+            element={<BasicKana type='katakana' variation={['dakuten']} />} 
+          />
+          <Route 
+            path='/quiz/katakana-handakuten' 
+            element={<BasicKana type='katakana' variation={['handakuten']} />} 
+          />
+
         </Routes>
       </BrowserRouter>
     </>
