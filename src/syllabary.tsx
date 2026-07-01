@@ -6,7 +6,15 @@ export type Kana = {
     | "basic"
     | "dakuten"
     | "handakuten"
-    | "combination";
+    | "combination"
+    | "youon";
+};
+
+export type Kanji = {
+  kana: string;
+  romaji: string;
+  type: "on" | "kun";
+  meaning: string
 };
 
 export const kanaList: Kana[] = [
@@ -109,6 +117,58 @@ export const kanaList: Kana[] = [
   { kana: "ぽ", romaji: "po", type: "hiragana", category: "handakuten" },
 
   // =====================
+  // HIRAGANA - YOUON
+  // =====================
+
+  { kana: "きゃ", romaji: "kya", type: "hiragana", category: "youon" },
+  { kana: "きゅ", romaji: "kyu", type: "hiragana", category: "youon" },
+  { kana: "きょ", romaji: "kyo", type: "hiragana", category: "youon" },
+
+  { kana: "ぎゃ", romaji: "gya", type: "hiragana", category: "youon" },
+  { kana: "ぎゅ", romaji: "gyu", type: "hiragana", category: "youon" },
+  { kana: "ぎょ", romaji: "gyo", type: "hiragana", category: "youon" },
+
+  { kana: "しゃ", romaji: "sha", type: "hiragana", category: "youon" },
+  { kana: "しゅ", romaji: "shu", type: "hiragana", category: "youon" },
+  { kana: "しょ", romaji: "sho", type: "hiragana", category: "youon" },
+
+  { kana: "じゃ", romaji: "ja", type: "hiragana", category: "youon" },
+  { kana: "じゅ", romaji: "ju", type: "hiragana", category: "youon" },
+  { kana: "じょ", romaji: "jo", type: "hiragana", category: "youon" },
+
+  { kana: "ちゃ", romaji: "cha", type: "hiragana", category: "youon" },
+  { kana: "ちゅ", romaji: "chu", type: "hiragana", category: "youon" },
+  { kana: "ちょ", romaji: "cho", type: "hiragana", category: "youon" },
+
+  { kana: "にゃ", romaji: "nya", type: "hiragana", category: "youon" },
+  { kana: "にゅ", romaji: "nyu", type: "hiragana", category: "youon" },
+  { kana: "にょ", romaji: "nyo", type: "hiragana", category: "youon" },
+
+  { kana: "ひゃ", romaji: "hya", type: "hiragana", category: "youon" },
+  { kana: "ひゅ", romaji: "hyu", type: "hiragana", category: "youon" },
+  { kana: "ひょ", romaji: "hyo", type: "hiragana", category: "youon" },
+
+  { kana: "びゃ", romaji: "bya", type: "hiragana", category: "youon" },
+  { kana: "びゅ", romaji: "byu", type: "hiragana", category: "youon" },
+  { kana: "びょ", romaji: "byo", type: "hiragana", category: "youon" },
+
+  { kana: "ぴゃ", romaji: "pya", type: "hiragana", category: "youon" },
+  { kana: "ぴゅ", romaji: "pyu", type: "hiragana", category: "youon" },
+  { kana: "ぴょ", romaji: "pyo", type: "hiragana", category: "youon" },
+
+  { kana: "みゃ", romaji: "mya", type: "hiragana", category: "youon" },
+  { kana: "みゅ", romaji: "myu", type: "hiragana", category: "youon" },
+  { kana: "みょ", romaji: "myo", type: "hiragana", category: "youon" },
+
+  { kana: "りゃ", romaji: "rya", type: "hiragana", category: "youon" },
+  { kana: "りゅ", romaji: "ryu", type: "hiragana", category: "youon" },
+  { kana: "りょ", romaji: "ryo", type: "hiragana", category: "youon" },
+
+  { kana: "ぢゃ", romaji: "ja", type: "hiragana", category: "youon" },
+  { kana: "ぢゅ", romaji: "ju", type: "hiragana", category: "youon" },
+  { kana: "ぢょ", romaji: "jo", type: "hiragana", category: "youon" },
+
+  // =====================
   // KATAKANA - BASIC
   // =====================
 
@@ -205,4 +265,56 @@ export const kanaList: Kana[] = [
   { kana: "プ", romaji: "pu", type: "katakana", category: "handakuten" },
   { kana: "ペ", romaji: "pe", type: "katakana", category: "handakuten" },
   { kana: "ポ", romaji: "po", type: "katakana", category: "handakuten" },
+
+  // =====================
+  // KATAKANA - YOUON
+  // =====================
+
+  { kana: "キャ", romaji: "kya", type: "katakana", category: "youon" },
+  { kana: "キュ", romaji: "kyu", type: "katakana", category: "youon" },
+  { kana: "キョ", romaji: "kyo", type: "katakana", category: "youon" },
+
+  { kana: "ギャ", romaji: "gya", type: "katakana", category: "youon" },
+  { kana: "ギュ", romaji: "gyu", type: "katakana", category: "youon" },
+  { kana: "ギョ", romaji: "gyo", type: "katakana", category: "youon" },
+
+  { kana: "シャ", romaji: "sha", type: "katakana", category: "youon" },
+  { kana: "シュ", romaji: "shu", type: "katakana", category: "youon" },
+  { kana: "ショ", romaji: "sho", type: "katakana", category: "youon" },
+
+  { kana: "ジャ", romaji: "ja", type: "katakana", category: "youon" },
+  { kana: "ジュ", romaji: "ju", type: "katakana", category: "youon" },
+  { kana: "ジョ", romaji: "jo", type: "katakana", category: "youon" },
+
+  { kana: "チャ", romaji: "cha", type: "katakana", category: "youon" },
+  { kana: "チュ", romaji: "chu", type: "katakana", category: "youon" },
+  { kana: "チョ", romaji: "cho", type: "katakana", category: "youon" },
+
+  { kana: "ニャ", romaji: "nya", type: "katakana", category: "youon" },
+  { kana: "ニュ", romaji: "nyu", type: "katakana", category: "youon" },
+  { kana: "ニョ", romaji: "nyo", type: "katakana", category: "youon" },
+
+  { kana: "ヒャ", romaji: "hya", type: "katakana", category: "youon" },
+  { kana: "ヒュ", romaji: "hyu", type: "katakana", category: "youon" },
+  { kana: "ヒョ", romaji: "hyo", type: "katakana", category: "youon" },
+
+  { kana: "ビャ", romaji: "bya", type: "katakana", category: "youon" },
+  { kana: "ビュ", romaji: "byu", type: "katakana", category: "youon" },
+  { kana: "ビョ", romaji: "byo", type: "katakana", category: "youon" },
+
+  { kana: "ピャ", romaji: "pya", type: "katakana", category: "youon" },
+  { kana: "ピュ", romaji: "pyu", type: "katakana", category: "youon" },
+  { kana: "ピョ", romaji: "pyo", type: "katakana", category: "youon" },
+
+  { kana: "ミャ", romaji: "mya", type: "katakana", category: "youon" },
+  { kana: "ミュ", romaji: "myu", type: "katakana", category: "youon" },
+  { kana: "ミョ", romaji: "myo", type: "katakana", category: "youon" },
+
+  { kana: "リャ", romaji: "rya", type: "katakana", category: "youon" },
+  { kana: "リュ", romaji: "ryu", type: "katakana", category: "youon" },
+  { kana: "リョ", romaji: "ryo", type: "katakana", category: "youon" },
+
+  { kana: "ヂャ", romaji: "ja", type: "katakana", category: "youon" },
+  { kana: "ヂュ", romaji: "ju", type: "katakana", category: "youon" },
+  { kana: "ヂョ", romaji: "jo", type: "katakana", category: "youon" },
 ];

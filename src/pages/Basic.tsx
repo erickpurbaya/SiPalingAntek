@@ -6,7 +6,7 @@ import { AnswerSound } from "../utilities/quiz";
 import { CapitalizeFirstWord } from "../utilities/general";
 import "../style.css";
 
-const variationChoice = ['handakuten', 'dakuten'];
+const variationChoice = ['handakuten', 'dakuten', 'youon'];
 
 export default function BasicKana({ 
     type = 'hiragana',
@@ -15,11 +15,14 @@ export default function BasicKana({
     type?: string,
     variation?: string[] }
   ) {
+
+  const mainInput = useRef<HTMLInputElement>(null);
   
   const [kanaVariations, setKanaVariations] = useState<string[]>(variation) // Checkboxes for kana variations
   const [previousVariations, setPreviousVariation] = useState<string[]>(variation) // Check if the requested variations the same as before
 
   const [requestedKana, setRequestedKana] = useState<Kana[]>(getKanaList(type, kanaVariations));
+  
   
   const playCorrect = useSound(AnswerSound.correct);
   const playCorrectStreak = useSound(AnswerSound.streak);
@@ -85,11 +88,19 @@ export default function BasicKana({
     setTypeAnswer(selected);
 
     if (selected.length >= question.correct.romaji.length) {
-      setCcorrectStreaj(0);
-      playWrong()
-      nextQuestion()
-      setWrongIndicator(true)
+      wrongAnswer()
     }
+  }
+
+  function wrongAnswer(){
+    setCcorrectStreaj(0);
+    playWrong()
+    setWrongIndicator(true)
+  }
+
+  function continueAfterWrong() {
+    nextQuestion()
+    setWrongIndicator(false)
   }
 
   function renewList() {
@@ -103,6 +114,12 @@ export default function BasicKana({
     setPreviousVariation(kanaVariations); 
   }
 
+  useEffect(() => {
+    if (!wrongIndicator) {
+      mainInput.current?.focus();
+    }
+  }, [wrongIndicator]);
+
   return (
     <div className="flex flex-col h-full min-h-screen">
       <h1 className="text-3xl font-bold mb-8">
@@ -113,6 +130,7 @@ export default function BasicKana({
             <label key={choice}>
               <input
                 type='checkbox'
+                disabled={wrongIndicator}
                 checked={kanaVariations.includes(choice)}
                 onClick={() => 
                   setKanaVariations(prev =>
@@ -129,7 +147,8 @@ export default function BasicKana({
       </h1>
       
       <button 
-        onClick={renewList} 
+        onClick={renewList}
+        disabled={wrongIndicator} 
         className="text-white font-bold rounded-lg px-5 py-2 w-fit text-center">
           Change
       </button>
@@ -137,21 +156,48 @@ export default function BasicKana({
       <div className="flex flex-col items-center gap-6">
         <p>Question {questionNo}</p>
 
-        <div className={`text-7xl p-10  duration-300 transition-all  text-black rounded shadow ${wrongIndicator ? 'bg-red-300' : 'bg-green-300 scale-110'}`}>
+        <div className={`text-7xl p-10 w-75 relative duration-300 transition-all  text-black rounded shadow ${wrongIndicator ? 'bg-red-300' : 'bg-green-300 scale-110'}`}>
           {question.correct.kana}
+          {
+            wrongIndicator &&
+              <div className="absolute bottom-2 left-[50%] -translate-x-[50%] text-xl">
+                {question.correct.romaji}
+              </div>
+          }
         </div>
         
         <div>
           {/* I want to detect enter, if  */}
           <input 
+            ref={mainInput}
             type="text" 
             value={typeAnswer}
+            disabled={wrongIndicator}
             onChange={(e) => handleTypeAnswer(e.target.value)} 
-            className={`border-3 shadow-2xl/50 duration-200 transition-all ${wrongIndicator ? 'border-red-700' : '' } bg-white rounded-lg p-3 text-black text-2xl text-center`} 
+            className={`border-3 shadow-2xl/50 duration-200 transition-all ${wrongIndicator ? 'border-red-700 cursor-not-allowed bg-gray-100' : '' } bg-white rounded-lg p-3 text-black text-2xl text-center`} 
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4 w-full max-w-md">
+        {
+          wrongIndicator &&
+            <button
+              key='continue'
+              onClick={continueAfterWrong}
+              className="
+                border
+                rounded
+                p-4
+                text-2xl
+                hover:bg-gray-100
+                hover:text-black
+                transition
+              "
+            >
+              Continue
+          </button>
+        }
+
+        {/* <div className="grid grid-cols-2 gap-4 w-full max-w-md">
           {question.answers.map(answer => (
             <button
               key={answer.kana}
@@ -169,7 +215,7 @@ export default function BasicKana({
               {answer.romaji}
             </button>
           ))}
-        </div>
+        </div> */}
       </div>
 
       <div className="flex-1 flex items-end justify-center">
@@ -178,3 +224,7 @@ export default function BasicKana({
     </div>
   );
 }
+
+// export function Result(
+  
+// )

@@ -23,11 +23,11 @@ function App() {
           />
           <Route 
             path='/quiz/hiragana-dakuten' 
-            element={<BasicKana type='hiragana' variation={['dakuten']} />} 
+            element={<BasicKana type='hiragana' variation={['basic', 'dakuten']} />} 
           />
           <Route 
             path='/quiz/hiragana-handakuten' 
-            element={<BasicKana type='hiragana' variation={['handakuten']} />} 
+            element={<BasicKana type='hiragana' variation={['basic', 'handakuten']} />} 
           />
 
           {/* KATAKANA ROUTE */}
@@ -37,11 +37,11 @@ function App() {
           />
           <Route 
             path='/quiz/katakana-dakuten' 
-            element={<BasicKana type='katakana' variation={['dakuten']} />} 
+            element={<BasicKana type='katakana' variation={['basic', 'dakuten']} />} 
           />
           <Route 
             path='/quiz/katakana-handakuten' 
-            element={<BasicKana type='katakana' variation={['handakuten']} />} 
+            element={<BasicKana type='katakana' variation={['basic', 'handakuten']} />} 
           />
 
         </Routes>
