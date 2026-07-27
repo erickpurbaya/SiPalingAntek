@@ -1,3 +1,4 @@
+export type JLPTLevel = "N5" | "N4" | "N3" | "N2" | "N1";
 export type Kana = {
   kana: string;
   romaji: string;
@@ -8,13 +9,6 @@ export type Kana = {
     | "handakuten"
     | "combination"
     | "youon";
-};
-
-export type Kanji = {
-  kana: string;
-  romaji: string;
-  type: "on" | "kun";
-  meaning: string
 };
 
 export const kanaList: Kana[] = [
