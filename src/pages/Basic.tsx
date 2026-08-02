@@ -5,7 +5,7 @@ import { generateQuestion, getKanaList, score } from "../utilities/quiz";
 import { AnswerSound } from "../utilities/quiz";
 import { CapitalizeFirstWord } from "../utilities/general";
 import "../style.css";
-import { HeartIcon } from "../utilities/icons";
+// import { HeartIcon } from "../utilities/icons";
 
 const variationChoice = ['handakuten', 'dakuten', 'youon'];
 
@@ -63,8 +63,8 @@ export default function BasicKana({
   }
 
   function calculateScore() {
-    const elapsedMs = Date.now() - questionStartTime.current;
-    const timeFactor = Math.max(0, 1 - elapsedMs / 1000);
+    const elapsedMs = Math.max(0.2, (Date.now() - questionStartTime.current) / 1000);
+    const timeFactor = Math.min(elapsedMs / (elapsedMs * elapsedMs), 5);
 
     // console.log(`${1 - (elapsedMs / 1000)} * ${score.multiplier} * ${correctStreak}`)
     return score.correct +
@@ -187,6 +187,10 @@ export default function BasicKana({
 
       <div className="flex flex-col items-center gap-6">
         <div className={`text-7xl w-75 relative flex flex-col gap-5`}>
+          <div className="text-xl">
+            <p>Timer</p>
+            <p>00:00</p>
+          </div>
           <div className="text-xl flex justify-between">
             <p>Question {questionNo}</p>
             <p>{sessionScore}</p>
@@ -215,11 +219,11 @@ export default function BasicKana({
           />
         </div>
         
-        <div className="flex gap-4">
+        {/* <div className="flex gap-4">
           <HeartIcon size="35px" />
           <HeartIcon size="35px" />
           <HeartIcon size="35px" />
-        </div>
+        </div> */}
 
         {
           wrongIndicator &&

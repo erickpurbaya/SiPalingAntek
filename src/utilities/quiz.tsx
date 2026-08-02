@@ -9,7 +9,7 @@ export const AnswerSound = {
 
 export const score = {
   correct: 1,
-  multiplier: 30
+  multiplier: 5
 }
 
 export function isKanji(item: Kana | Kanji): item is Kanji {

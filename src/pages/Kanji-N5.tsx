@@ -11,12 +11,15 @@ export default function KanjiQuizN5({ library = n5Kanji }) {
   const [requestedKana, setRequestedKana] = useState<Kanji[]>(library);
 
   const storageName = storageNames;
-  const [storeKanjiLearn, setStorageKanjiLearn] = useState()
+  // const [storeKanjiLearn, setStorageKanjiLearn] = useState()
   localStorage.setItem(storageName['learn'], JSON.stringify(['thisKanji', 'thatKanji']));
     
   const playCorrect = useSound(AnswerSound.correct);
   const playCorrectStreak = useSound(AnswerSound.streak);
   const playWrong = useSound(AnswerSound.incorrect);
+
+  const [levelSelect, setLevelSelect] = useState(0)
+  const [levelChange, setLevelChange] = useState(0)
 
   // const [typeAnswer, setTypeAnswer] = useState<string>("");
   const [correctStreak, setCorrectStreak] = useState<number>(0);
@@ -83,11 +86,13 @@ export default function KanjiQuizN5({ library = n5Kanji }) {
 
   function handleTypeAnswer(selected: string) {
     if (selected === question.correct.romaji) {
-      setRequestedKana(
-        (requestedKana as Kanji[]).filter(
-          ({ kanji }) => kanji !== (question.correct as Kanji).kanji
-        )
-      );
+      if (levelSelect == 0) {
+        setRequestedKana(
+          (requestedKana as Kanji[]).filter(
+            ({ kanji }) => kanji !== (question.correct as Kanji).kanji
+          )
+        );
+      }
       // nextQuestion(); Generated at useEffect
       if (correctStreak >= 10) {
         playCorrectStreak()
@@ -114,6 +119,18 @@ export default function KanjiQuizN5({ library = n5Kanji }) {
     nextQuestion(false)
     setWrongIndicator(false)
   }
+
+  function changeLevel(){
+    const kanjis = library.filter(item => item.round == levelSelect);
+    if (kanjis.length > 0) {
+      setRequestedKana(kanjis);
+      setLevelChange(prev => prev + 1);
+    }
+  }
+
+  useEffect(() => {
+    setQuestion(getQuestion())
+  }, [levelChange])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -163,6 +180,16 @@ export default function KanjiQuizN5({ library = n5Kanji }) {
 
       <div className="flex flex-col items-center gap-6">
         <p>Question {questionNo}</p>
+        <div className="flex gap-3">
+          <input 
+            onChange={(e) => setLevelSelect(Number(e.target.value))}
+            type="number" className="bg-white text-black p-3" placeholder="Level 1-18"   
+          />  
+          <button
+            onClick={changeLevel}
+            className="bg-slate-600 text-white rounded-lg p-3 cursor-pointer "
+          >Change Level</button>
+        </div>
 
         {
           isKanji(question.correct) &&

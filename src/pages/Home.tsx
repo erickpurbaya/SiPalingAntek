@@ -34,7 +34,7 @@ export default function Home() {
         
         {/* N5 Kanji */}
         <div data-div='parent-button-kana' className='grid grid-cols-2 gap-4 my-5'>
-            <Link className='bg-slate-800 rounded-lg font-bold px-5 py-3 hover:bg-slate-700 duration-100 transition-all text-white' to='/quiz/kanji/n5-base'>Base Kanji</Link>
+            <Link className='bg-slate-800 rounded-lg font-bold px-5 py-3 hover:bg-slate-700 duration-100 transition-all text-white' to='/quiz/kanji/n5-levels'>Kanji Training</Link>
             <Link className='bg-slate-800 rounded-lg font-bold px-5 py-3 hover:bg-slate-700 duration-100 transition-all text-white' to='/quiz/kanji/n5'>N5 Kanji</Link>
             <Link className='bg-slate-800 rounded-lg font-bold px-5 py-3 hover:bg-slate-700 duration-100 transition-all text-white' to='/quiz/kanji/n5-2'>N5 Kanji 2</Link>
             <Link className='bg-slate-800 rounded-lg font-bold px-5 py-3 hover:bg-slate-700 duration-100 transition-all text-white' to='/quiz/kanji/n5-3'>N5 Kanji 3</Link>
