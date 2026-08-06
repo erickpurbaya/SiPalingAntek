@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { type Kana } from "../syllabary";
-import { generateQuestion, getKanaList } from "../utilities/quiz";
+import { generateQuestion, getKanaList, score } from "../utilities/quiz";
 import { AnswerSound } from "../utilities/quiz";
 import { CapitalizeFirstWord } from "../utilities/general";
 import "../style.css";
+// import { HeartIcon } from "../utilities/icons";
 
-const variationChoice = ['handakuten', 'dakuten'];
+const variationChoice = ['handakuten', 'dakuten', 'youon'];
 
 export default function BasicKana({ 
     type = 'hiragana',
@@ -15,18 +16,24 @@ export default function BasicKana({
     type?: string,
     variation?: string[] }
   ) {
+
+  const mainInput = useRef<HTMLInputElement>(null);
   
   const [kanaVariations, setKanaVariations] = useState<string[]>(variation) // Checkboxes for kana variations
-  const [previousVariations, setPreviousVariation] = useState<string[]>(variation) // Check if the requested variations the same as before
+  // const [previousVariations, setPreviousVariation] = useState<string[]>(variation) // Check if the requested variations the same as before
 
   const [requestedKana, setRequestedKana] = useState<Kana[]>(getKanaList(type, kanaVariations));
-  
+
+  // Scoring
+  const [ sessionScore, setSessionScore ] = useState(0);
+  const questionStartTime = useRef(Date.now());
+    
   const playCorrect = useSound(AnswerSound.correct);
   const playCorrectStreak = useSound(AnswerSound.streak);
   const playWrong = useSound(AnswerSound.incorrect);
 
   const [typeAnswer, setTypeAnswer] = useState<string>("");
-  const [correctStreak, setCcorrectStreaj] = useState<number>(0);
+  const [correctStreak, setCorrectStreak] = useState<number>(1);
   const [wrongIndicator, setWrongIndicator] = useState<boolean>(false);
   const [questionNo, setQuestionNo] = useState(1);
   const [question, setQuestion] = useState(
@@ -55,26 +62,37 @@ export default function BasicKana({
     return play;
   }
 
+  function calculateScore() {
+    const elapsedMs = Math.max(0.2, (Date.now() - questionStartTime.current) / 1000);
+    const timeFactor = Math.min(elapsedMs / (elapsedMs * elapsedMs), 5);
+
+    // console.log(`${1 - (elapsedMs / 1000)} * ${score.multiplier} * ${correctStreak}`)
+    return score.correct +
+       Math.round(timeFactor * score.multiplier * correctStreak);
+  }
+
   function nextQuestion() {
-    setCcorrectStreaj(prev => prev + 1)
+    setCorrectStreak(prev => prev + 1)
     setQuestionNo(prev => prev + 1);
     setQuestion(getQuestion());
     setTypeAnswer("");
     setWrongIndicator(false);
   }
 
-  function handleAnswer(selected: Kana) {
-    if (selected.kana === question.correct.kana) {
-      setQuestionNo(prev => prev + 1);
-      setQuestion(getQuestion());
-    } else {
-      alert("Wrong!");
-    }
-  }
+  // function handleAnswer(selected: Kana) {
+  //   if (selected.kana === question.correct.kana) {
+  //     setQuestionNo(prev => prev + 1);
+  //     setQuestion(getQuestion());
+  //   } else {
+  //     alert("Wrong!");
+  //   }
+  // }
 
   function handleTypeAnswer(selected: string) {
     if (selected === question.correct.romaji) {
+      setSessionScore(prev => prev + calculateScore());
       nextQuestion();
+
       if (correctStreak >= 10) {
         playCorrectStreak()
       } else {
@@ -85,11 +103,19 @@ export default function BasicKana({
     setTypeAnswer(selected);
 
     if (selected.length >= question.correct.romaji.length) {
-      setCcorrectStreaj(0);
-      playWrong()
-      nextQuestion()
-      setWrongIndicator(true)
+      wrongAnswer()
     }
+  }
+
+  function wrongAnswer(){
+    setCorrectStreak(1);
+    playWrong()
+    setWrongIndicator(true)
+  }
+
+  function continueAfterWrong() {
+    nextQuestion()
+    setWrongIndicator(false)
   }
 
   function renewList() {
@@ -100,8 +126,31 @@ export default function BasicKana({
     setQuestion(getQuestion())
 
     // Remember previously requested variations, to diable request button.
-    setPreviousVariation(kanaVariations); 
+    // setPreviousVariation(kanaVariations); 
   }
+
+  useEffect(() => {
+    questionStartTime.current = Date.now();
+  }, [questionNo])
+
+  useEffect(() => {
+    if (!wrongIndicator) {
+      mainInput.current?.focus();
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Tab" && wrongIndicator) {
+        e.preventDefault(); // Optional: prevent focus from moving
+        continueAfterWrong()
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [wrongIndicator]);
 
   return (
     <div className="flex flex-col h-full min-h-screen">
@@ -113,6 +162,7 @@ export default function BasicKana({
             <label key={choice}>
               <input
                 type='checkbox'
+                disabled={wrongIndicator}
                 checked={kanaVariations.includes(choice)}
                 onClick={() => 
                   setKanaVariations(prev =>
@@ -129,29 +179,72 @@ export default function BasicKana({
       </h1>
       
       <button 
-        onClick={renewList} 
+        onClick={renewList}
+        disabled={wrongIndicator} 
         className="text-white font-bold rounded-lg px-5 py-2 w-fit text-center">
           Change
       </button>
 
       <div className="flex flex-col items-center gap-6">
-        <p>Question {questionNo}</p>
-
-        <div className={`text-7xl p-10  duration-300 transition-all  text-black rounded shadow ${wrongIndicator ? 'bg-red-300' : 'bg-green-300 scale-110'}`}>
-          {question.correct.kana}
+        <div className={`text-7xl w-75 relative flex flex-col gap-5`}>
+          <div className="text-xl">
+            <p>Timer</p>
+            <p>00:00</p>
+          </div>
+          <div className="text-xl flex justify-between">
+            <p>Question {questionNo}</p>
+            <p>{sessionScore}</p>
+          </div>
+          
+          <div className={`w-full p-10 duration-300 transition-all  text-black rounded shadow ${wrongIndicator ? 'bg-red-300' : 'bg-green-300 scale-110'}`}>
+            {question.correct.kana}
+            {
+              wrongIndicator &&
+                <div className="absolute bottom-2 left-[50%] -translate-x-[50%] text-xl">
+                  {question.correct.romaji}
+                </div>
+            }
+          </div>
         </div>
         
         <div>
           {/* I want to detect enter, if  */}
           <input 
+            ref={mainInput}
             type="text" 
             value={typeAnswer}
-            onChange={(e) => handleTypeAnswer(e.target.value)} 
-            className={`border-3 shadow-2xl/50 duration-200 transition-all ${wrongIndicator ? 'border-red-700' : '' } bg-white rounded-lg p-3 text-black text-2xl text-center`} 
+            disabled={wrongIndicator}
+            onChange={(e) => handleTypeAnswer(e.target.value.toLowerCase().replace(/[^a-z]/g, ""))} 
+            className={`border-3 shadow-2xl/50 duration-200 transition-all ${wrongIndicator ? 'border-red-700 cursor-not-allowed bg-gray-100' : '' } bg-white rounded-lg p-3 text-black text-2xl text-center`} 
           />
         </div>
+        
+        {/* <div className="flex gap-4">
+          <HeartIcon size="35px" />
+          <HeartIcon size="35px" />
+          <HeartIcon size="35px" />
+        </div> */}
 
-        <div className="grid grid-cols-2 gap-4 w-full max-w-md">
+        {
+          wrongIndicator &&
+            <button
+              key='continue'
+              onClick={continueAfterWrong}
+              className="
+                border
+                rounded
+                p-4
+                text-2xl
+                hover:bg-gray-100
+                hover:text-black
+                transition
+              "
+            >
+              Tab to Continue
+          </button>
+        }
+
+        {/* <div className="grid grid-cols-2 gap-4 w-full max-w-md">
           {question.answers.map(answer => (
             <button
               key={answer.kana}
@@ -169,7 +262,7 @@ export default function BasicKana({
               {answer.romaji}
             </button>
           ))}
-        </div>
+        </div> */}
       </div>
 
       <div className="flex-1 flex items-end justify-center">
@@ -178,3 +271,7 @@ export default function BasicKana({
     </div>
   );
 }
+
+// export function Result(
+  
+// )
