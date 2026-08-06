@@ -5,6 +5,7 @@ export type Kanji = {
   meaning: string;
   level: "N5"|"N4"|"N3"|"N2"|"N1";
   round?: number;
+  indonesian?: string;
 };
 
 export type HardKanji = {

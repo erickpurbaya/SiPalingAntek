@@ -7,8 +7,8 @@ export default function Home() {
         <div className='flex justify-center'>
             <img src='/logo.png' className='w-70 aspect-square bg-white rounded-full'  />
         </div>
-        <h1 className="flex flex-col gap-4">Si Paling Antek
-            <p className='text-slate-500 text-xl'>Japanese</p>
+        <h1 className="flex flex-col gap-2">Si Paling Antek
+            <p className='text-slate-500 text-xl'>Japanese Kotoba</p>
         </h1>
 
         <div className="flex gap-3 text-white justify-center">
@@ -33,11 +33,16 @@ export default function Home() {
         </div>
         
         {/* N5 Kanji */}
-        <div data-div='parent-button-kana' className='grid grid-cols-2 gap-4 my-5'>
+        <div data-div='parent-button-kana' className='flex flex-col gap-4 my-5 relativez'>
             <Link className='bg-slate-800 rounded-lg font-bold px-5 py-3 hover:bg-slate-700 duration-100 transition-all text-white' to='/quiz/kanji/n5-levels'>Kanji Training</Link>
-            <Link className='bg-slate-800 rounded-lg font-bold px-5 py-3 hover:bg-slate-700 duration-100 transition-all text-white' to='/quiz/kanji/n5'>N5 Kanji</Link>
-            <Link className='bg-slate-800 rounded-lg font-bold px-5 py-3 hover:bg-slate-700 duration-100 transition-all text-white' to='/quiz/kanji/n5-2'>N5 Kanji 2</Link>
-            <Link className='bg-slate-800 rounded-lg font-bold px-5 py-3 hover:bg-slate-700 duration-100 transition-all text-white' to='/quiz/kanji/n5-3'>N5 Kanji 3</Link>
+            <div className='flex flex-col gap-3 mt-5'>
+                <p>Miscellaneous (Test)</p>
+                <div className='flex gap-3'>
+                    <Link className='bg-slate-800 rounded-lg font-bold px-5 py-3 hover:bg-slate-700 duration-100 transition-all text-white' to='/quiz/kanji/n5'>N5 Kanji</Link>
+                    <Link className='bg-slate-800 rounded-lg font-bold px-5 py-3 hover:bg-slate-700 duration-100 transition-all text-white' to='/quiz/kanji/n5-2'>N5 Kanji 2</Link>
+                    <Link className='bg-slate-800 rounded-lg font-bold px-5 py-3 hover:bg-slate-700 duration-100 transition-all text-white' to='/quiz/kanji/n5-3'>N5 Kanji 3</Link>
+                </div>
+            </div>
         </div>
 
         {/* Reset Remedy */}

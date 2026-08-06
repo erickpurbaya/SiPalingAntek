@@ -12,8 +12,8 @@ export const score = {
   multiplier: 5
 }
 
-export function isKanji(item: Kana | Kanji): item is Kanji {
-  return "kanji" in item;
+export function isKanji(item: Kana | Kanji | undefined): item is Kanji {
+  return item !== undefined && "kanji" in item;
 }
 
 export function shuffle<T>(items: T[]): T[] {
