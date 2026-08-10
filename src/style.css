@@ -1,1 +1,44 @@
 @import "tailwindcss";
+
+@theme {
+  --animate-wiggle: wiggle 1s ease-in-out infinite;
+  --animate-bounce-right: bounce-right 0.5s ease-in-out;
+  --animate-wiggle-wrong: wiggle-wrong 0.5s ease-in-out;
+
+    @keyframes bounce-right {
+        0%,
+        100% {
+            transform: translateY(0px);
+        }
+        50% {
+            background: var(--color-green-300);
+            transform: translateY(-10px);
+        }
+    }
+
+    @keyframes wiggle-wrong {
+        0% {
+            transform: translatex(0px);
+        }
+        10%,90% {
+            transform: translatex(-5px);
+        }
+        30%,70% {
+            transform: translateX(5px);
+        }
+        50% {
+            background: var(--color-red-300);
+            transform: translateY(-5px);
+        }
+    }
+
+  @keyframes wiggle {
+    0%,
+    100% {
+      transform: rotate(-3deg);
+    }
+    50% {
+      transform: rotate(3deg);
+    }
+  }
+}

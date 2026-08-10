@@ -30,8 +30,12 @@ export function getRandomItem<T>(items: T[]): T {
   return items[Math.floor(Math.random() * items.length)];
 }
 
-export function generateQuestion<T extends Kana | Kanji>(collection: T[], type: "kana" | "kanji" = "kana") {
-  const correct: Kana | Kanji = getRandomItem(collection);
+export function generateQuestion<T extends Kana | Kanji>(collection: T[], type: "kana" | "kanji" = "kana", requestedKanji: string[] = []) {
+  const filteredCollection = requestedKanji.length == 0 ? collection
+    : collection.filter(item => requestedKanji.includes((item as Kanji).kanji) ) 
+
+  console.log(filteredCollection)
+  const correct: Kana | Kanji = getRandomItem(filteredCollection);
 
   const wrongAnswers = shuffle(
     collection.filter(item => {
