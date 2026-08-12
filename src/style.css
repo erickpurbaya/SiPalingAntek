@@ -2,8 +2,32 @@
 
 @theme {
   --animate-wiggle: wiggle 1s ease-in-out infinite;
-  --animate-bounce-right: bounce-right 0.5s ease-in-out;
-  --animate-wiggle-wrong: wiggle-wrong 0.5s ease-in-out;
+  --animate-bounce-right: bounce-right 0.4s ease-in-out;
+  --animate-wiggle-wrong: wiggle-wrong 0.4s ease-in-out;
+  --animate-rise: rise 0.3s ease-in-out;
+  --animate-sink-disapper: sink-disappear 0.5s ease-in-out;
+
+    @keyframes rise {
+        0% {
+            transform: translateY(10px);
+            opacity: 0;
+        }
+        100% {
+            transform: translateY(0px);
+            opacity: 1;
+        }
+    }
+
+    @keyframes sink-disappear {
+        0% {
+            transform: translateY(0px);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(10px);
+            opacity: 0;
+        }
+    }
 
     @keyframes bounce-right {
         0%,

@@ -1,6 +1,7 @@
 import { type Kanji } from "../syllabary-kanji";
 
 export const KotobeLevelTheme = [
+    { level: -1, theme: "Test 3 Questions" },
     { level: 1, theme: "School & Time" },
     { level: 2, theme: "Basic Daily Actions" },
     { level: 3, theme: "Food & Eating" },
@@ -34,6 +35,11 @@ export const KotobeLevelTheme = [
 ];
 
 export const n5Kotoba_lv1: Kanji[] = [
+    
+    { kanji: "今日", kana: "きょう", romaji: "kyou", meaning: "today", indonesian: "hari ini", level: "N5", round: -1 },
+    { kanji: "昨日", kana: "きのう", romaji: "kinou", meaning: "yesterday", indonesian: "kemarin", level: "N5", round: -1 },
+    { kanji: "明日", kana: "あした", romaji: "ashita", meaning: "tomorrow", indonesian: "besok", level: "N5", round: -1 },
+
     // Round 1 — 20 related vocabulary items
     { kanji: "時間", kana: "じかん", romaji: "jikan", meaning: "time", indonesian: "waktu", level: "N5", round: 1 },
     { kanji: "時計", kana: "とけい", romaji: "tokei", meaning: "clock; watch", indonesian: "clock; watch", level: "N5", round: 1 },

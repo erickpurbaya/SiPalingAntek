@@ -9,7 +9,9 @@ export const AnswerSound = {
 
 export const score = {
   correct: 1,
-  multiplier: 5
+  multiplier: 3, // Kinder towards longer completion time
+  minTime: 0.3,
+  maxTime: 5
 }
 
 export function isKanji(item: Kana | Kanji | undefined): item is Kanji {
@@ -34,7 +36,6 @@ export function generateQuestion<T extends Kana | Kanji>(collection: T[], type: 
   const filteredCollection = requestedKanji.length == 0 ? collection
     : collection.filter(item => requestedKanji.includes((item as Kanji).kanji) ) 
 
-  console.log(filteredCollection)
   const correct: Kana | Kanji = getRandomItem(filteredCollection);
 
   const wrongAnswers = shuffle(
