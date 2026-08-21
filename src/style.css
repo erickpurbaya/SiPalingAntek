@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
 @theme {
   --animate-wiggle: wiggle 1s ease-in-out infinite;
   --animate-bounce-right: bounce-right 0.4s ease-in-out;

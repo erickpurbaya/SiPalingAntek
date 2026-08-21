@@ -11,7 +11,7 @@ export const score = {
   correct: 1,
   multiplier: 3, // Kinder towards longer completion time
   minTime: 0.3,
-  maxTime: 5
+  maxTime: 10
 }
 
 export function isKanji(item: Kana | Kanji | undefined): item is Kanji {

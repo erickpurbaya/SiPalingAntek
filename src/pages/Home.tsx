@@ -1,7 +1,17 @@
 import { Link } from 'react-router-dom';
+// import { n5Kotoba_lv1 } from '../syllabary/kanji-n5';
 // import { resetRemedy } from '../syllabary-kanji';
 
 export default function Home() {
+    // const duplicateKanji = Object.entries(
+    //     n5Kotoba_lv1.reduce((counts, obj) => {
+    //         counts[obj.kanji] = (counts[obj.kanji] || 0) + 1;
+    //         return counts;
+    //     }, {})
+    // )
+    // .filter(([, count]) => count > 1)
+    // .map(([kanji]) => kanji);
+
   return (
     <div className='p-5 relative flex flex-col justify-center items-center min-h-screen'>
         <div className='flex justify-center'>
@@ -53,6 +63,14 @@ export default function Home() {
         <p className='fixed bottom-5 text-sm'>
             ©2026 Erick Purbaya
         </p>
+
+        {/* <p className='mt-10'>
+            {
+                duplicateKanji.map(item => 
+                    <p>{item}</p>
+                )
+            }
+        </p> */}
     </div>
 )}
 
