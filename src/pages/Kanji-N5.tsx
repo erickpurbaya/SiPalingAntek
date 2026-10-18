@@ -1,16 +1,23 @@
-import { motion } from "motion/react";
 import { supabase } from "../supabaseClient";
-import { PopUpResult, storageNames, type Leaderboard, SortLeaderboard, CountUp, PopupTimesUp } from "../utilities/general";
+import { PopUpResult, storageNames, type Leaderboard, SortLeaderboard, PopupTimesUp } from "../utilities/general";
 import { Hidden, Reveal } from "../utilities/icons";
 // import { BackdropBlur } from "../utilities/components";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { type Kanji, n5Kanji, type HardKanji } from "../syllabary-kanji";
-import { generateQuestion, AnswerSound, isKanji, score } from "../utilities/quiz";
-import { KotobeLevelTheme } from "../syllabary/kanji-n5";
+import { generateQuestion, AnswerSound, isKanji, score, CountdowntoStart, CountdowntoStartIndicator } from "../utilities/quiz";
+// import { KotobeLevelTheme } from "../syllabary/kanji-n5";
 import "../style.css";
 
+type KanjiMastery ={
+  kanji: string,
+  correct: number,
+  incorrect: number,
+  mastery: number
+}
+
 export default function KanjiQuizN5({ library = n5Kanji, isExercise = false }) {
+
   const [libraryDatabase, setLibraryDatabase] = useState<Kanji[]>(library); // A level of kanjis
   const [requestedKana, setRequestedKana] = useState<string[]>(libraryDatabase.map(item => item.kanji));  // List of kanji to be tested
 
@@ -30,7 +37,7 @@ export default function KanjiQuizN5({ library = n5Kanji, isExercise = false }) {
     return data;
   }
 
-  const timerTotalSeconds = 600;
+  const timerTotalSeconds = 1800;
   const storageName = storageNames;
   const bouncingTime = 400;
   localStorage.setItem(storageName['learn'], JSON.stringify(['thisKanji', 'thatKanji']));
@@ -41,30 +48,55 @@ export default function KanjiQuizN5({ library = n5Kanji, isExercise = false }) {
 
   const [showAnswer, setShowAnswer] = useState(false); // Manually show the meaning of a kanji on the bottom right
   const [isBouncing, setIsBouncing] = useState(false); // Trigger bouncing effect when correct
-  const [isWiggle, setIsWiggle] = useState(false); // Trigger wiggle effect when wrong
+  // const [isWiggle, setIsWiggle] = useState(false); // Trigger wiggle effect when wrong
   const [scoreLeaderboard, setScoreLeaderboard] = useState<Leaderboard[]>([]);
 
   // Scoring
   const [popupScore, setPopupScore] = useState({ open: false, title: 'Default' })
-  const [userScore, setUserScore] = useState({name: '', score: 0}) // User score by answering correctly
+  const [userScore, setUserScore] = useState({name: '', score: 0, correct: 0, incorrect: 0}) // User score by answering correctly
   const [initTimeScore, setInitTimeScore] = useState<number>(0) // Initial time before an answer for scoring purpose
   
+  // To help in determining if a user has mastered a certain kanji
+  const [kanjiMastery, setKanjiMastery] = useState<KanjiMastery[] | null>(() => {
+    const saved = localStorage.getItem("kanji");
+    return saved ? JSON.parse(saved) : null;
+  });
+
   const [isTimesUp, setTimesUp] = useState(false) // Indicate time is up
+  // const [countdownStatus, setCountdownStatus] = useState<number>(CountdowntoStartIndicator.idling)
+  const [countdownStatus, setCountdownStatus] = useState<number>(CountdowntoStartIndicator.finished)
+  const gameOngoing = countdownStatus > CountdowntoStartIndicator.finished
+
   const [isLevelFinished, setIsLevelFinished] = useState(false) // Indicate if the user has finished answering a level
   const exerciseMode = isExercise; // Auto skip a review session after an incorrect answer
 
   const [levelSelect, setLevelSelect] = useState(0) // Level number
-  const [levelTheme, setLevelTheme] = useState("") // Level name
+  // const [levelTheme, setLevelTheme] = useState("") // Level name
   const [levelChange, setLevelChange] = useState(false) // Trigger level changing effects (Reset kanji list etc.)
-  const [levelShow, setLevelShow] = useState(false); // Trigger to show dropdown of available levels
-  const levelList = [
-    ...new Set(
-      library
-        .map(item => item.round)
-        .filter((round): round is number => round !== undefined)
-    )
-  ].sort((a, b) => a - b);
+  // const [levelShow, setLevelShow] = useState(false); // Trigger to show dropdown of available levels
+  // const levelList = [
+  //   ...new Set(
+  //     library
+  //       .map(item => item.round)
+  //       .filter((round): round is number => round !== undefined)
+  //   )
+  // ].sort((a, b) => a - b);
 
+  // Cl
+
+  // Set the marked choice as wrong
+  const [chosenWrongAnswer, setChosenWrongAnswer] = useState({
+    target: null as HTMLButtonElement | null,
+    kanji: null as Kanji | null
+  });
+  const answerReferences = [
+    useRef<HTMLButtonElement>(null),
+    useRef<HTMLButtonElement>(null),
+    useRef<HTMLButtonElement>(null),
+    useRef<HTMLButtonElement>(null),
+  ];
+
+  const hasStarted = countdownStatus >= CountdowntoStartIndicator.finished
   const [correctStreak, setCorrectStreak] = useState<number>(0);
   const [wrongIndicator, setWrongIndicator] = useState<boolean>(false);
   const [questionNo, setQuestionNo] = useState(1);
@@ -131,7 +163,7 @@ export default function KanjiQuizN5({ library = n5Kanji, isExercise = false }) {
   
   function ResetScore(){
     setCorrectStreak(0)
-    setUserScore({ score: 0, name: ''})
+    setUserScore({ score: 0, name: '', incorrect: 0, correct: 0})
   }
 
   function ResetLevelKanji() {
@@ -151,7 +183,17 @@ export default function KanjiQuizN5({ library = n5Kanji, isExercise = false }) {
     setCountTimer(timerTotalSeconds)
   }
 
+  // Countdown before the quiz is active.
+  function beginStartCountdown(){
+    setCountdownStatus(CountdowntoStartIndicator.counting)
+  }
+
+  // Timer start
   function beginCountdown() {
+    // Check if 
+    if (countdownStatus < CountdowntoStartIndicator.finished) return
+    setCountdownStatus(CountdowntoStartIndicator.hasStarted)
+
     // Prevent multiple intervals
     if (popupScore.open) {
       setPopupScore((prev) => ({ ...prev, open: false}))
@@ -245,10 +287,48 @@ export default function KanjiQuizN5({ library = n5Kanji, isExercise = false }) {
     return selected === question.correct.romaji;
   }
 
-  function handleTypeAnswer(selected: string) {
+  function calculateMastery(isCorrect: boolean, kanji: Kanji) {
+    setKanjiMastery(prev => {
+      const current = prev ?? [];
+      const existing = current.find(item => item.kanji === kanji.kanji);
+
+      if (!existing) {
+        return [
+          ...current,
+          {
+            kanji: kanji.kanji,
+            incorrect: isCorrect ? 0 : 1,
+            correct: isCorrect ? 1 : 0,
+            mastery: isCorrect ? 0.2 : 0
+          }
+        ];
+      }
+
+      return current.map(item => {
+        if (item.kanji !== kanji.kanji) return item;
+
+        const correct = item.correct + (isCorrect ? 1 : 0);
+        const incorrect = item.incorrect + (isCorrect ? 0 : 1);
+
+        return {
+          ...item,
+          correct,
+          incorrect,
+          mastery: correct - incorrect >= 20 
+            ? 1 
+            : Math.min(Math.max(0, correct / (correct + incorrect)), 0.70)
+        };
+      });
+    });
+  }
+
+  function handleTypeAnswer(chosen: Kanji, answer?: HTMLButtonElement | null ) {
+    const selected = chosen.romaji
+
+    // Correct
     if (selected === question.correct.romaji) {
       // Record if showAnswer was initially clicked by user.
-      setUserScore((prev) => ({ ...prev, score: prev.score + calculatePoints(initTimeScore)})); // Calculate score
+      setUserScore((prev) => ({ ...prev, score: prev.score + calculatePoints(initTimeScore), correct: prev.correct + 1 })); // Calculate score
       const demandedShown = showAnswer
       if (!demandedShown) {
         setShowAnswer(true)
@@ -259,11 +339,6 @@ export default function KanjiQuizN5({ library = n5Kanji, isExercise = false }) {
         if (!demandedShown) { 
           setShowAnswer(false)
         }
-        // setRequestedKana(
-        //   (requestedKana as Kanji[]).filter(
-        //     ({ kanji }) => kanji !== (question.correct as Kanji).kanji
-        //   )
-        // );
         setRequestedKana(requestedKana.filter(item => item !== (question.correct as Kanji).kanji));
       }, bouncingTime)
       
@@ -273,17 +348,27 @@ export default function KanjiQuizN5({ library = n5Kanji, isExercise = false }) {
       } else {
         playCorrect()
       }
-      
+
+      calculateMastery(true, chosen)
       return;
     } else {
+      if (answer) {
+        setChosenWrongAnswer({
+          target: answer,
+          kanji: chosen
+        })
+      }
+      calculateMastery(false, chosen)
       wrongAnswer()
     }
   }
 
   function wrongAnswer(){
-    setIsWiggle(true)
+    pauseCountdown()
+    setUserScore((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }))
+    // setIsWiggle(true)
     setTimeout(() => {
-      setIsWiggle(false)
+      // setIsWiggle(false)
 
       // Auto skip review for maximum time spend to exercise
       if (exerciseMode) {
@@ -298,7 +383,9 @@ export default function KanjiQuizN5({ library = n5Kanji, isExercise = false }) {
 
   function continueAfterWrong() {
     nextQuestion(false)
+    beginCountdown()
     setWrongIndicator(false)
+    setChosenWrongAnswer({kanji: null, target: null})
   }
 
   function renewKanjiList(kanjis: Kanji[]){
@@ -309,11 +396,11 @@ export default function KanjiQuizN5({ library = n5Kanji, isExercise = false }) {
   function buttonChangeLevel(level: number){
     const kanjis = library.filter(item => item.round == level);
     setLevelSelect(level)
-    setLevelShow(false)
+    // setLevelShow(false)
     beginCountdown()
-    setLevelTheme(
-        KotobeLevelTheme.find(item => item.level === level)?.theme ?? ""
-    );
+    // setLevelTheme(
+    //     KotobeLevelTheme.find(item => item.level === level)?.theme ?? ""
+    // );
     if (kanjis.length > 0) {
       // setRequestedKana(kanjis);
       console.log(kanjis)
@@ -327,9 +414,10 @@ export default function KanjiQuizN5({ library = n5Kanji, isExercise = false }) {
       console.log("Triggered keydown: ", {
         countRunning,
         isTimesUp,
-        isLevelFinished
+        isLevelFinished,
+        gameOngoing
       })
-      if (!countRunning || isTimesUp || isLevelFinished) return
+      if (!countRunning || isTimesUp || isLevelFinished || !gameOngoing) return
       e.preventDefault();
 
       if (e.key === "Tab") {
@@ -352,7 +440,8 @@ export default function KanjiQuizN5({ library = n5Kanji, isExercise = false }) {
         index >= 0 &&
         index < question.answers.length + 1
       ) {
-        handleTypeAnswer(question.answers[index].romaji);
+        e.preventDefault();
+        handleTypeAnswer(question.answers[index] as Kanji);
       }
     };
 
@@ -360,7 +449,7 @@ export default function KanjiQuizN5({ library = n5Kanji, isExercise = false }) {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [wrongIndicator, question]);
+  }, [wrongIndicator, question, triggerTimer]);
 
   
   useEffect(() => {
@@ -381,6 +470,12 @@ export default function KanjiQuizN5({ library = n5Kanji, isExercise = false }) {
   }, [isLevelFinished])
 
   useEffect(() => {
+    if (countdownStatus == CountdowntoStartIndicator.finished) {
+      beginCountdown()
+    }
+  }, [countdownStatus])
+
+  useEffect(() => {
     console.log('From ', !countRunning, ' to ', countRunning);
   }, [countRunning])
 
@@ -391,14 +486,40 @@ export default function KanjiQuizN5({ library = n5Kanji, isExercise = false }) {
     };
 
     loadLeaderboard();
+    // beginStartCountdown();
+    // handleTypeAnswer('incorrect')
     beginCountdown();
   }, []);
 
+  useEffect(() => {
+    localStorage.setItem('kanji', JSON.stringify(kanjiMastery))
+    console.log(kanjiMastery)
+  }, [kanjiMastery])
+
   return (
-    <div className="flex flex-col h-full min-h-screen">
+    <div className="flex flex-col overflow-hidden px-5 py-10 h-dvh relative">
+      <Link
+        to='/'
+        className={`
+          absolute
+          top-5
+          left-5
+          gap-1
+          flex
+          items-center
+        `}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+        </svg>
+        Home
+      </Link>
       <h1 className="text-3xl font-bold mb-8">
         N5 Kanji Quiz
       </h1>
+      <p>
+        Question {questionNo}
+      </p>
       {/* {popupTimesUp()} */}
       <PopupTimesUp 
         {...popupScore} 
@@ -408,110 +529,243 @@ export default function KanjiQuizN5({ library = n5Kanji, isExercise = false }) {
         levelResetter={ResetLevel}  
       />
 
-      <div className="flex flex-col items-center gap-3 md:gap-6">
+      {/* Countdown before start */}
+      <CountdowntoStart isStart={countdownStatus} setter={setCountdownStatus} />
+
+      <div className="flex flex-1 flex-col items-center gap-3 md:gap-6">
         <div>
-          <p>
+          <p 
+            className="
+              text-2xl
+            ">
             {String(countdown.minutes).padStart(2, '0')}:
             {String(countdown.seconds).padStart(2, '0')}
           </p>
+        </div>
+
+        {/* Kanji Container */}
+        <div
+          className="
+            relative
+            flex
+            flex-1
+            p-5
+            border
+            rounded-sm
+            overflow-hidden
+            border-gray-500
+            w-full
+            h-full
+          "  
+        >
           <button 
-            onClick={() => !triggerTimer ? beginCountdown() : pauseCountdown()}
-            className="px-3 py-2 bg-slate-700 text-white font-bold rounded-sm hover:cursor-pointer">
-              {!triggerTimer ? 'Start Timer' : 'Resume Timer'}
-          </button>
-        </div>
-        <div className="flex w-80 justify-between">
-          <p>Question {questionNo}</p>
-          <p>{userScore.score}</p>
-        </div>
-        <div className="gap-3 relative flex min-w-80 justify-between"> 
-          <button
-            onClick={() => buttonChangeLevel(levelSelect)}
-            className="bg-slate-600 text-white rounded-lg p-3 cursor-pointer "
-          >Replay</button>
-
-          <div className="w-full flex-1 relative">
-            <button
-              onClick={() => setLevelShow(!levelShow)}
-              className="bg-slate-600 w-full text-white rounded-lg p-3 cursor-pointer "
-            >Level {levelSelect ? levelSelect : 'All'} - {levelTheme}</button>
-
+            className="absolute bottom-6 right-4 flex items-center justify-center"
+            onClick={() => setShowAnswer(!showAnswer)}  
+            disabled={wrongIndicator}
+          >
             {
-              levelShow &&
-                <div className="absolute z-15 min-w-35 w-full -bottom-3 translate-y-[100%] bg-white rounded-md text-black h-40 overflow-auto flex flex-col">
-                  {levelList.map(item => (
-                    <button key={item} className="text-left hover:bg-gray-800 hover:text-white disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-black cursor-pointer py-2 px-4"
-                      disabled={item == levelSelect}
-                      onClick={() => buttonChangeLevel(item)}
-                    >
-                      Level {item}
-                    </button>
-                  ))}
-                </div>
+              showAnswer 
+                ? (
+                  <Hidden size="30px" color="#ffffff" />
+                ) : (
+                  <Reveal size="30px" color="#ffffff" />
+                )
             }
-          </div>
-        </div>
-
+          </button>
         {
           question && isKanji(question.correct) &&
-            <motion.div 
-              animate={correctStreak >= 1 ? { y: [0, -10, 0]} : {}}
-                transition={{ duration: 0.3 }}
-                onClick={() => {
-                  if (isLevelFinished) {
-                    buttonChangeLevel(levelSelect)
-                  }
-                }}
-                className={`
-                  ${isBouncing &&'animate-bounce-right'}
-                  text-6xl md:text-7xl px-3 py-12 w-70 my-3 md:my-0 md:w-80 scale-105 md:scale-110 relative duration-300 transition-all text-black rounded shadow ${wrongIndicator ? 'bg-red-300' : 'bg-green-300'}`}>
-                {isLevelFinished ? 'Replay?' : question.correct.kanji}
+          <div
+            className={`
+              w-full
+              flex
+              flex-col
+            `}
+          >
+            {/* Score and others */}
+            <div
+              className="
+                flex
+                justify-between
+              "
+            >
+              <div
+                className="
+                  flex
+                  flex-col
+                  gap-0
+                  flex-1
+                  text-2xl
+                "
+              >
+                <p className="text-xs">
+                  CORRECT
+                </p>
+                <p>{userScore.correct}</p>
+              </div>
+
+                            <div
+                className="
+                  flex
+                  flex-col
+                  gap-0
+                  flex-1
+                  text-2xl
+                "
+              >
+                <p className="text-xs">
+                  INCORRECT
+                </p>
+                <p>{userScore.incorrect}</p>
+              </div>
+
+              {/* Score */}
+              <div
+                className="
+                  flex
+                  flex-col
+                  gap-0
+                  flex-1
+                  text-2xl
+                "
+              >
+                <p className="text-xs">
+                  SCORE
+                </p>
+                <p>{userScore.score}</p>
+              </div>
+            </div>
+
+            {/* Questioned Kanji */}
+            <div
+              className="
+                relative
+                flex
+                flex-1
+                items-center
+                justify-center
+              "
+            >
+              <p 
+              className="
+                text-6xl
+                w-full
+                relative
+                text-white
+              ">
+                {question.correct.kanji}
                 {
                   (wrongIndicator || showAnswer) &&
-                    <div className="absolute bottom-2 left-0 right-0 grid grid-cols-3 px-3 text-xs md:text-sm">
-                      <div className="flex items-center justify-center">  
-                        {wrongIndicator && question.correct.romaji}
-                      </div>
-                      <div className="flex items-center justify-center">
-                        {wrongIndicator && question.correct.kana}
-                      </div>
-                      <div className="flex items-center justify-center">
-                        {question.correct.indonesian ?? question.correct.meaning}
+                    <div className="absolute -bottom-20 w-full">
+                      <div className="right-0 grid grid-cols-2 px-3 text-base mb-5 text-white">
+                        {/* <div className="flex items-center justify-center">  
+                          {wrongIndicator && question.correct.romaji}
+                        </div> */}
+                        <div className="flex items-center justify-center">
+                          {wrongIndicator && question.correct.kana}
+                        </div>
+                        <div className="flex items-center justify-center">
+                          {question.correct.indonesian ?? question.correct.meaning}
+                        </div>
                       </div>
                     </div>
                 }
-                <button 
-                  className="absolute top-4 right-4 flex items-center justify-center"
-                  onClick={() => setShowAnswer(!showAnswer)}  
-                  // onClick={() => setBackdropActive(!backdropActive)}
-                  disabled={wrongIndicator}
+              </p>
+              {
+              (wrongIndicator || showAnswer) &&
+                <div
+                  className={`
+                    absolute bottom-5 left-0 
+                    w-full
+                    transition-all
+                    ${wrongIndicator || showAnswer ? 'visible' : 'invisible animate-sink-disappear'}
+                  `}
                 >
                   {
-                    showAnswer 
-                      ? (
-                        <Hidden size="30px" />
-                      ) : (
-                        <Reveal size="30px" />
-                      )
+                    wrongIndicator && chosenWrongAnswer.kanji &&
+                      <div
+                        className={`
+                          flex
+                          justify-between
+                          items-center
+                          gap-3
+                          border
+                          rounded-md
+                          border-red-500
+                          text-sm
+                          text-left
+                          p-3
+                          transition-all
+                          ${wrongIndicator ? 'visible animate-rise' : 'invisible'}
+                        `}
+                      >
+                        <div className="flex-1">
+                          <p>{chosenWrongAnswer.kanji?.kana}</p>
+                          <p>{chosenWrongAnswer.kanji?.indonesian}</p>
+                        </div>
+                        <p className="text-3xl text-gray-300">{chosenWrongAnswer.kanji?.kanji}</p>
+                      </div>
                   }
-                </button>
-            </motion.div>
+                </div>
+              }
+            </div>
+            
+            {/* Footer */}
+            <div
+              className={`
+                  w-full
+              `}
+            >
+              <button
+                key="skip"
+                onClick={ 
+                  !hasStarted 
+                    // ? (countdownStatus >= CountdowntoStartIndicator.finished ? beginCountdown() : beginStartCountdown()) 
+                    ? beginStartCountdown 
+                    : wrongIndicator ? continueAfterWrong : wrongAnswer}
+                className={`
+                  w-40
+                  border
+                  rounded
+                  p-2
+                  text-sm
+                  ${!wrongIndicator 
+                    ? 'hover:bg-gray-100 hover:text-black' 
+                    : 'hover:scale-103 cursor-pointer'}
+                  disabled:bg-gray-300
+                  disabled:text-black
+                  text-center
+                  transition
+
+                `}
+                // disabled={wrongIndicator}
+              >
+                { 
+                  !hasStarted ? "Start" :
+                  isLevelFinished ? 'Replay' : 
+                  wrongIndicator ? 'Continue' : 'Skip'}
+              </button>
+            </div>
+          </div>
         }
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-3xl px-10">
+        </div>
+        
+        <div className="grid grid-cols-2 gap-2 w-full max-w-3xl">
           {question && question.answers.map((answer, index) => (
             <button
               key={isKanji(answer) ? answer.kanji : answer.romaji}
-              onClick={() => handleTypeAnswer(answer.romaji)}
+              ref={answerReferences[index]}
+              onClick={() => handleTypeAnswer(answer as Kanji, answerReferences[index].current)}
               className={`
                 ${wrongIndicator && "text-black"}
-                ${wrongIndicator && isAnswerCorrect(answer.romaji) ? "border-green-400! bg-green-300! font-semibold!" : ( !wrongIndicator ? "bg-white" : "border-red-400! bg-red-200!") }
+                ${wrongIndicator && isAnswerCorrect(answer.romaji) ? "border-green-400! font-semibold!"  : ( !wrongIndicator ? "border-gray-600  text-white" : "") }
+                ${(chosenWrongAnswer.target == answerReferences[index].current && wrongIndicator) ? "border-red-400! animate-wiggle-wrong" : (wrongIndicator && !isAnswerCorrect(answer.romaji) && "opacity-30!")}
                 border
                 rounded
-                py-2
-                px-4
+                py-3
+                px-2
                 md:p-4
-                text-black
+                text-white
                 text-md
                 md:text-lg
                 hover:bg-gray-200
@@ -519,52 +773,29 @@ export default function KanjiQuizN5({ library = n5Kanji, isExercise = false }) {
                 ${(!wrongIndicator && countRunning) && 'hover:-translate-y-1'}
                 disabled:cursor-default
                 cursor-pointer
-                text-left
+                text-center
                 transition-all
                 duration-300
                 relative
                 ${isBouncing && isAnswerCorrect(answer.romaji) ? 'animate-bounce-right' : ''}
-                ${isWiggle && !isAnswerCorrect(answer.romaji) ? 'animate-wiggle-wrong' : ''}
               `}
               disabled={wrongIndicator || !countRunning}
             >
-              {index + 1}. {answer.kana} 
-              {/* + {answer.romaji == question.correct.romaji ? 'Benar' : 'Salah'} */}
-              {
-                wrongIndicator && isKanji(answer) && !exerciseMode &&
+              
+                {/* ${isBouncing && isAnswerCorrect(answer.romaji) ? 'animate-bounce-right' : ''}
+                ${isWiggle && chosenWrongAnswer.target == answerReferences[index].current ? 'animate-wiggle-wrong' : ''} */}
+              {answer.kana}
+              {/* {
+                wrongIndicator && isKanji(answer) && !exerciseMode && 
                   <div className="absolute right-3 top-[50%] translate-y-[-50%] text-sm text-right">
                     <p className="">{answer.kanji}</p>
                     <p className="">{answer.meaning}</p>
                   </div>
-              }
+              } */}
               
             </button>
           ))}
-          <button
-              key="skip"
-              onClick={ wrongIndicator ? continueAfterWrong : wrongAnswer}
-              className={`
-                
-                border
-                rounded
-                px-4
-                py-2
-                text-xl
-                ${!wrongIndicator ? 'hover:bg-gray-100 hover:text-black' : 'hover:scale-103 cursor-pointer'}
-                disabled:bg-gray-300
-                disabled:text-black
-                text-left
-                transition
-              `}
-              disabled={!countRunning}
-            >
-              Tab. { isLevelFinished ? 'Replay' : (wrongIndicator ? 'Continue' : 'Skip')}
-            </button>
         </div>
-      </div>
-
-      <div className="flex-1 flex items-end justify-center">
-        <Link to='/' className="bg-red-900 text-white font-bold rounded-sm px-5 py-2 my-4">Back to Hom</Link>
       </div>
 
       <PopUpResult />

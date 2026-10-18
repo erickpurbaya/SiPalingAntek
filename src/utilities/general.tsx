@@ -14,9 +14,12 @@ export type Leaderboard = {
   created_at?: string, // timestamp.Excample: 2026-08-19T03:22:15.123Z
 }
 
-const zIndexes = {
-  timesup: 10
+export const zIndexes = {
+  timesup: 10,
+  popup: 25
 }
+
+// const StartCountdown = 3;
 
 export function scrollToComp(
   component: RefObject<HTMLDivElement | null>
@@ -112,8 +115,11 @@ export const PopupTimesUp = ({
     const [visible, setVisible] = useState(false);
     const [appearAnim, setAppearAnim] = useState(animSeq.init);
     const [loadingCreate, setLoadingCreate] = useState(false);
+    const [userRank, setUserRank] = useState<number>(0);
 
     const userScoreRow = useRef<HTMLDivElement>(null);
+    const playerNameLimit = 15
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
     const isShowBackdrop = appearAnim > animSeq.backdrop;
     const isShowPopup = appearAnim > animSeq.backdrop;
@@ -187,6 +193,7 @@ export const PopupTimesUp = ({
         clearTimeout(timer2);
         clearTimeout(timer3);
         clearTimeout(timer4);
+        clearTimeout(timer41);
         clearTimeout(timer5);
       };
     }, [open]);
@@ -198,6 +205,12 @@ export const PopupTimesUp = ({
     }, [appearAnim])
 
     useEffect(() => {
+      const userRanking = playerLeaderboard.findIndex(
+        item => player.score > item.score
+      ) + 1;
+
+      setUserRank(userRanking);
+
       if (!open && visible) {
         // Start closing animation immediately
         setAppearAnim(animSeq.popup_sink);
@@ -274,6 +287,13 @@ export const PopupTimesUp = ({
                 ? "h-150"
                 : "h-50"
             }
+
+                        ${
+            // AnimateScore: 3. Expand the score board for leaderboard
+              isExpanding
+                ? "h-150"
+                : "h-50"
+            }
           `}
         >
           <p className="font-bold text-xl">
@@ -299,29 +319,34 @@ export const PopupTimesUp = ({
                   />
                 </p>
                 
-                <input 
-                  type="text"
-                  name="username"
-                  placeholder="Nama"
-                  autoComplete="off"
-                  maxLength={15}
-                  value={player.name}
-                  onChange={(e) => {
-                    playerSetter((prev: Player) => ({ ...prev, name: e.target.value}))
-                  }}
-                  className={`
-                    w-60
-                    py-1
-                    px-3
-                    my-1
-                    bg-white
-                    text-black
-                    text-sm
-                    rounded-sm  
-                    ${ isExpanding ? 'animate-rise' : 'opacity-0'}
-                    ${ submitLoading ? 'animate-sink-disappear' : 'animate-rise' }
-                  `}
-                />
+                <div className="relative h-fit flex items-center bg-red-300 my-2">
+                  <input 
+                    type="text"
+                    name="username"
+                    placeholder="Nama"
+                    autoComplete="off"
+                    maxLength={playerNameLimit}
+                    value={player.name}
+                    onChange={(e) => {
+                      playerSetter((prev: Player) => ({ ...prev, name: e.target.value}))
+                    }}
+                    className={`
+                      w-60
+                      h-10
+                      py-1
+                      px-3
+                      bg-white
+                      text-black
+                      text-sm
+                      rounded-sm  
+                      ${ isExpanding ? 'animate-rise' : 'opacity-0'}
+                      ${ submitLoading ? 'animate-sink-disappear' : 'animate-rise' }
+                    `}
+                  />
+                  <p className="text-xs text-gray-500 absolute right-3 top-[50%] translate-y-[-50%]">
+                      {player.name.length}/{playerNameLimit}
+                  </p>
+                </div>
               </div>
             }
           </div>
@@ -338,7 +363,7 @@ export const PopupTimesUp = ({
                     // AnimateScore: 4. Show leaderboard
                     isShowLeaderboard ? 'animate-rise' : 'opacity-0'
                   }
-                  flex flex-col gap-2 w-full overflow-y-auto overflow-x-hidden scrollbar-none my-3`}
+                  flex flex-col gap-2 w-full overflow-y-auto overflow-x-hidden scrollbar-none my-2`}
                 >
                 {
                   playerLeaderboard.map(({ id, name, score }, number) => {
@@ -375,7 +400,7 @@ export const PopupTimesUp = ({
                     flex gap-3 text-sm w-full justify-between items-center px-5 py-2 border border-gray-400 duration-300 transition-all
                   `}
                 >
-                  <p>99.</p>
+                  <p>{userRank}</p>
                   <p>{player.name}</p>
                   <p className="text-right flex-1">
                     {
@@ -397,10 +422,26 @@ export const PopupTimesUp = ({
                       <div key={`score-${id}`} 
                         className={`
                           ${isPostScore ? 'translate-y-0' : '-translate-y-12'}   
-                          flex gap-3 text-sm w-full justify-between items-center px-5 py-2 border border-gray-400 duration-300 transition-all
+                          flex gap-3 h-10 text-sm w-full justify-between overflow-hiddenf flex-1 items-center px-5 py-2 border border-gray-400 duration-300 transition-all
                         `}
                       >
-                        <p>{number+1}.</p>
+                        <div className={`
+                            overflow-hidden
+                            w-full
+                            max-w-3
+                          `}
+                        >
+                          <div className={`
+                            ${isPostScore ? 'translate-x-[-101%]' : 'translate-x-0'}
+                            duration-1000
+                            transition-all   
+                            flex
+                            gap-1
+                          `}>
+                            <p className="w-full flex flex-1 justify-center">{number+1}.</p>
+                            <p className="w-full flex flex-1 justify-center">{number+2}.</p>
+                          </div>
+                        </div>
                         <p>{name}</p>
                         <p className="text-right flex-1">
                           {
@@ -427,9 +468,9 @@ export const PopupTimesUp = ({
               animateTrigger={isShowLeaderboard}
             /> 
             <ButtonPopup 
-              caption="Submit"
-              onClick={() => addLeaderboardScore({...player})}
-              disabled={player.name.length < 2}
+              caption={isSubmitting ? 'Sending...' : 'Submit'}
+              onClick={() => addLeaderboardScore({...player, setIndicator: setIsSubmitting})}
+              disabled={player.name.length < 2 || isSubmitting}
               animateTrigger={isShowLeaderboard}
             /> 
           </div>

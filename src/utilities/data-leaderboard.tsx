@@ -1,24 +1,36 @@
-import { supabase } from "../supabaseClient";
+// import { supabase } from "../supabaseClient";
   
-  export const addLeaderboardScore = async ({
-    name,
-    score
-  } : {
-    name: string;
-    score: number;
-  }) => {
-    const { data, error } = await supabase
-      .from('leaderboard')
-      .insert({
-        name,
-        score,
-      })
-      .select();
+type AddLeaderboardScoreParams = {
+  name: string;
+  score: number;
+  setIndicator?: (loading: boolean) => void;
+};
 
-    if (error) {
-      console.error(error);
-      return null;
-    }
+export const addLeaderboardScore = async ({
+  // name,
+  // score,
+  setIndicator,
+}: AddLeaderboardScoreParams) => {
+  setIndicator?.(true);
 
-    return data;
-  };
+  try {
+    console.log('In')
+    // const { data, error } = await supabase
+    //   .from('leaderboard')
+    //   .insert({ name, score })
+    //   .select();
+
+    // if (error) {
+    //   console.error('Failed to add leaderboard score:', error);
+    //   return null;
+    // }
+
+    // return data;
+  } finally {
+    // setIndicator?.(false);
+    setTimeout(() => {
+      setIndicator?.(false);
+    }, 3000)
+
+  }
+};

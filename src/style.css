@@ -15,6 +15,18 @@
   --animate-wiggle-wrong: wiggle-wrong 0.4s ease-in-out;
   --animate-rise: rise 0.3s ease-in-out;
   --animate-sink-disapper: sink-disappear 0.5s ease-in-out;
+  --animate-big-to-disappear: big-to-disappear 1s ease-in-out;
+
+    @keyframes big-to-disappear {
+        0% {
+            transform: scale(1.3);
+            opacity: 1;
+        }
+        100% {
+            transform: scale(0.95);
+            opacity: 0;
+        }
+    }
 
     @keyframes rise {
         0% {
@@ -44,7 +56,7 @@
             transform: translateY(0px);
         }
         50% {
-            background: var(--color-green-300);
+            background: var(--color-green-700);
             transform: translateY(-10px);
         }
     }
@@ -60,7 +72,7 @@
             transform: translateX(5px);
         }
         50% {
-            background: var(--color-red-300);
+            background: var(--color-red-700);
             transform: translateY(-5px);
         }
     }

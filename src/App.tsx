@@ -9,6 +9,7 @@ import './style.css'
 import Home from "./pages/Home";
 import BasicKana from "./pages/Basic";
 import KanjiQuizN5 from './pages/Kanji-N5';
+import MainTugofWar from './pages/Kanji-TugofWar';
 import { n5Kanji_base, n5Kanji, n5Kanji_2, n5Kanji_3 } from './syllabary-kanji';
 import { n5Kotoba_lv1 } from './syllabary/kanji-n5';
 
@@ -66,6 +67,12 @@ function App() {
           <Route 
             path='/quiz/kanji/n5-levels' 
             element={<KanjiQuizN5 library={n5Kotoba_lv1} />} 
+          />
+
+          {/* In Development */}
+          <Route 
+            path='/quiz/tug-of-war' 
+            element={<MainTugofWar />} 
           />
 
         </Routes>

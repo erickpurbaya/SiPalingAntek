@@ -45,15 +45,22 @@ export default function Home() {
         {/* N5 Kanji */}
         <div data-div='parent-button-kana' className='flex flex-col gap-4 my-5 relativez'>
             <Link className='bg-slate-800 rounded-lg font-bold px-5 py-3 hover:bg-slate-700 duration-100 transition-all text-white' to='/quiz/kanji/n5-levels'>Kanji Training</Link>
-            <div className='flex flex-col gap-3 mt-5'>
+            <Link className='bg-slate-800 rounded-lg font-bold px-5 py-3 hover:bg-slate-700 duration-100 transition-all text-white' to='/quiz/kanji/n5-levels'>Kanji Training (Prototype)</Link>
+            {/* <div className='flex flex-col gap-3 mt-5'>
                 <p>Miscellaneous (Test)</p>
                 <div className='flex gap-3'>
                     <Link className='bg-slate-800 rounded-lg font-bold px-5 py-3 hover:bg-slate-700 duration-100 transition-all text-white' to='/quiz/kanji/n5'>N5 Kanji</Link>
                     <Link className='bg-slate-800 rounded-lg font-bold px-5 py-3 hover:bg-slate-700 duration-100 transition-all text-white' to='/quiz/kanji/n5-2'>N5 Kanji 2</Link>
                     <Link className='bg-slate-800 rounded-lg font-bold px-5 py-3 hover:bg-slate-700 duration-100 transition-all text-white' to='/quiz/kanji/n5-3'>N5 Kanji 3</Link>
                 </div>
-            </div>
+            </div> */}
         </div>
+
+        
+        {/* N5 Kanji */}
+        {/* <div data-div='parent-button-tugofwar' className='flex flex-col gap-4 my-5 relativez'>
+            <Link className='bg-slate-800 rounded-lg font-bold px-5 py-3 hover:bg-slate-700 duration-100 transition-all text-white' to='/quiz/tug-of-war'>Tug of War (Prototype)</Link>
+        </div> */}
 
         {/* Reset Remedy */}
         {/* <div data-div='parent-button-kana' className='flex flex-col gap-4 '>
