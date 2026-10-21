@@ -44,7 +44,8 @@ export default function Home() {
         
         {/* N5 Kanji */}
         <div data-div='parent-button-kana' className='flex flex-col gap-4 my-5 relativez'>
-            <Link className='bg-slate-800 rounded-lg font-bold px-5 py-3 hover:bg-slate-700 duration-100 transition-all text-white' to='/quiz/kanji/n5-levels'>Kanji Training</Link>
+            <Link className='bg-slate-800 rounded-lg font-bold px-5 py-3 hover:bg-slate-700 duration-100 transition-all text-white' to='/quiz/kanji/n5-levels'>Kanji Training 25-35</Link>
+            <Link className='bg-slate-800 rounded-lg font-bold px-5 py-3 hover:bg-slate-700 duration-100 transition-all text-white' to='/mnn-quiz/kanji'>Kanji Training 36-40</Link>
             <Link className='bg-slate-800 rounded-lg font-bold px-5 py-3 hover:bg-slate-700 duration-100 transition-all text-white' to='/quiz/kanji/n5-levels'>Kanji Training (Prototype)</Link>
             {/* <div className='flex flex-col gap-3 mt-5'>
                 <p>Miscellaneous (Test)</p>

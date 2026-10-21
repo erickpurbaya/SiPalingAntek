@@ -12,6 +12,8 @@ import KanjiQuizN5 from './pages/Kanji-N5';
 import MainTugofWar from './pages/Kanji-TugofWar';
 import { n5Kanji_base, n5Kanji, n5Kanji_2, n5Kanji_3 } from './syllabary-kanji';
 import { n5Kotoba_lv1 } from './syllabary/kanji-n5';
+import MNNBased from './pages/MinnaNihongo';
+import { WordList } from './syllabary/mnn-book';
 
 function App() {
   return (
@@ -67,6 +69,16 @@ function App() {
           <Route 
             path='/quiz/kanji/n5-levels' 
             element={<KanjiQuizN5 library={n5Kotoba_lv1} />} 
+          />
+
+          <Route 
+            path='/minna-nihongo' 
+            element={<KanjiQuizN5 library={n5Kotoba_lv1} />} 
+          />
+
+          <Route 
+            path='/mnn-quiz/kanji' 
+            element={<MNNBased library={WordList} />} 
           />
 
           {/* In Development */}

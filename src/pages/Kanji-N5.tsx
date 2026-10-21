@@ -106,6 +106,7 @@ export default function KanjiQuizN5({ library = n5Kanji, isExercise = false }) {
   const [correctStreak, setCorrectStreak] = useState<number>(0);
   const [wrongIndicator, setWrongIndicator] = useState<boolean>(false);
   const [questionNo, setQuestionNo] = useState(1);
+  const [questionLength, setQuestionLength] = useState(library.length);
   const [question, setQuestion] = useState(() =>
     getQuestion()
   );
@@ -415,8 +416,9 @@ export default function KanjiQuizN5({ library = n5Kanji, isExercise = false }) {
   }
 
   function renewKanjiList(kanjis: Kanji[]){
-    setLibraryDatabase(kanjis)
-    setRequestedKana(kanjis.map(prev => prev.kanji))
+    setLibraryDatabase(kanjis);
+    setQuestionLength(kanjis.length);
+    setRequestedKana(kanjis.map(prev => prev.kanji));
   }
 
   function buttonChangeLevel(level: number){
@@ -543,9 +545,44 @@ export default function KanjiQuizN5({ library = n5Kanji, isExercise = false }) {
       <h1 className="text-3xl font-bold mb-8">
         N5 Kanji Quiz
       </h1>
-      <p>
-        Question {questionNo}
-      </p>
+
+      {/* Question number, level name, time */}
+      <div 
+        className="
+          flex 
+          items-center my-2
+        "
+      >
+        <div className="flex-1 flex flex-col justify-center items-start gap-1 text-white">
+          <p>
+            Question <span className="font-bold">{questionNo}</span> of {questionLength}
+          </p>
+          <p className={`
+              border
+              border-gray-300
+              bg-gray-400/10
+                
+              text-[10px]
+              py-px
+              px-3
+              rounded-sm
+            `}
+          >
+            MNN Chapter 1
+          </p>
+        </div>
+        <div>
+          <p 
+            className="
+              text-2xl
+              text-white
+            ">
+            {String(countdown.minutes).padStart(2, '0')}:
+            {String(countdown.seconds).padStart(2, '0')}
+          </p>
+        </div>
+      </div>
+
       {/* {popupTimesUp()} */}
       <PopupTimesUp 
         {...popupScore} 
@@ -559,15 +596,6 @@ export default function KanjiQuizN5({ library = n5Kanji, isExercise = false }) {
       <CountdowntoStart isStart={countdownStatus} setter={setCountdownStatus} />
 
       <div className="flex flex-1 flex-col items-center gap-3 md:gap-6">
-        <div>
-          <p 
-            className="
-              text-2xl
-            ">
-            {String(countdown.minutes).padStart(2, '0')}:
-            {String(countdown.seconds).padStart(2, '0')}
-          </p>
-        </div>
 
         {/* Kanji Container */}
         <div
@@ -726,7 +754,7 @@ export default function KanjiQuizN5({ library = n5Kanji, isExercise = false }) {
             </div>
 
 
-            </div>
+          </div>
         }
 
         </div>
@@ -749,9 +777,7 @@ export default function KanjiQuizN5({ library = n5Kanji, isExercise = false }) {
                 text-white
                 text-md
                 md:text-lg
-                hover:bg-gray-200
-                hover:text-black
-                ${(!wrongIndicator && countRunning) && 'hover:-translate-y-1'}
+                ${(!wrongIndicator && countRunning) && 'hover:-translate-y-1 hover:bg-gray-200/5 hover:border-white'}
                 disabled:cursor-default
                 cursor-pointer
                 text-center
