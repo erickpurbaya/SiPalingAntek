@@ -6,7 +6,7 @@ import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 // import { type Kanji, n5Kanji, type HardKanji } from "../syllabary-kanji";
 import { type HardKanji } from "../syllabary-kanji";
-import { type Word, WordList } from "../syllabary/mnn-book";
+import { type Word, WordList, JLPTLevelColor } from "../syllabary/mnn-book";
 import { generateQuestion, AnswerSound, isKanji, score, CountdowntoStart, CountdowntoStartIndicator } from "../utilities/mnn-quiz";
 // import { KotobeLevelTheme } from "../syllabary/kanji-n5";
 import "../style.css";
@@ -558,15 +558,29 @@ export default function MNNBased({ library = WordList, isExercise = false }) {
         "
       >
         <div className="flex-1 flex flex-col justify-center items-start gap-1 text-white">
-            <p>
-                Question <span className="font-bold">{questionNo}</span> of {questionLength}
+            <p className="font-[50]">
+                <span className="font-bold">Question {questionNo}</span> of {questionLength}
             </p>
             <div className="flex gap-2">
-                {[`Chapter ${word.chapter}`, word.level, word.class].map((label) => (
-                    <p key={label} className={`border border-gray-300 bg-gray-400/10 text-[10px] py-px px-3 rounded-sm`}>
-                        {label}
-                    </p>
-                ))}
+              {[word.level, `Chapter ${word.chapter}`, word.class].map((label) => {
+                const color = 
+                  label in JLPTLevelColor
+                    ? JLPTLevelColor[label as keyof typeof JLPTLevelColor]
+                    : undefined;
+
+                return (
+                  <p
+                    key={label}
+                    className="rounded-sm border border-gray-300 bg-gray-400/10 px-3 py-px text-[10px]"
+                    style={{
+                      backgroundColor: color ? `rgba(${color}, 0.1)` : undefined,
+                      borderColor: color ? `rgb(${color})` : undefined,
+                    }}
+                  >
+                    {label}
+                  </p>
+                );
+              })}
             </div>
         </div>
         <div>
@@ -684,12 +698,14 @@ export default function MNNBased({ library = WordList, isExercise = false }) {
               "
             >
               <p 
-              className="
-                text-6xl
-                w-full
-                relative
-                text-white
-              ">
+                className={`
+                  text-6xl
+                  w-full
+                  relative
+                  text-white
+                  ${isBouncing ? 'animate-slide-left-disappear' : 'animate-slide-left-appear'}
+                  // ${isBouncing ? 'animate-slide-left-disappear' : 'animate-slide-left-appear'}
+              `}>
                 {question.correct.kanji}
                 {
                   (wrongIndicator || showAnswer) &&
@@ -711,43 +727,65 @@ export default function MNNBased({ library = WordList, isExercise = false }) {
 
               
               {/* Explanation */}
-              <div
-                className={`
+              <div className="
                   absolute
                   bottom-0
                   w-full
+                  min-h-14.5
                   flex
-                  flex-1
-                  transition-all
-                  ${wrongIndicator || showAnswer ? 'visible' : 'invisible animate-sink-disappear'}
-                `}
-              >
-                {
-                  wrongIndicator && chosenWrongAnswer.kanji &&
-                    <div
-                      className={`
-                        flex
-                        w-full
-                        justify-between
-                        items-center
-                        gap-3
-                        border
-                        rounded-md
-                        border-red-500
-                        text-xs
-                        text-left
-                        p-3
-                        transition-all
-                        ${wrongIndicator ? 'visible animate-rise' : 'invisible'}
-                      `}
-                    >
-                      <div className="flex-1">
-                        <p>{chosenWrongAnswer.kanji?.kana}</p>
-                        <p>{chosenWrongAnswer.kanji?.indonesian}</p>
+                  items-center 
+                  gap-3
+                ">
+                <div
+                  className={`
+                    flex
+                    flex-1
+                    transition-all
+                    ${wrongIndicator || showAnswer ? 'visible' : 'invisible animate-sink-disappear'}
+                  `}
+                >
+                  {
+                    wrongIndicator && chosenWrongAnswer.kanji &&
+                      <div
+                        className={`
+                          flex
+                          w-full
+                          justify-between
+                          items-center
+                          gap-3
+                          border
+                          rounded-md
+                          border-red-500
+                          text-xs
+                          text-left
+                          p-3
+                          transition-all
+                          ${wrongIndicator ? 'visible animate-rise' : 'invisible'}
+                        `}
+                      >
+                        <div className="flex-1">
+                          <p>{chosenWrongAnswer.kanji?.kana}</p>
+                          <p>{chosenWrongAnswer.kanji?.indonesian}</p>
+                        </div>
+                        <p className="text-xl text-gray-300">{chosenWrongAnswer.kanji?.kanji}</p>
                       </div>
-                      <p className="text-xl text-gray-300">{chosenWrongAnswer.kanji?.kanji}</p>
-                    </div>
-                }
+                  }
+                </div>
+                  
+                <button 
+                  className="flex items-end justify-center h-full"
+                  onClick={() => setShowAnswer(!showAnswer)}  
+                  disabled={wrongIndicator}
+                >
+                  {
+                    showAnswer 
+                      ? (
+                        <Hidden size="30px" color="#999999" />
+                      ) : (
+                        <Reveal size="30px" color="#999999" />
+                      )
+                  }
+                </button>
               </div>
             </div>
 
@@ -760,7 +798,7 @@ export default function MNNBased({ library = WordList, isExercise = false }) {
         <div className="grid grid-cols-2 gap-2 w-full max-w-3xl">
           {question && question.answers.map((answer, index) => (
             <button
-              key={isKanji(answer) ? answer.kanji : answer.kana}
+              key={answer.kanji}
               ref={answerReferences[index]}
               onClick={() => handleTypeAnswer(answer as Word, answerReferences[index].current)}
               className={`
@@ -840,21 +878,6 @@ export default function MNNBased({ library = WordList, isExercise = false }) {
                   wrongIndicator ? 'Continue' : 'Skip'}
               </button>
 
-              
-              <button 
-                className="items-center justify-center"
-                onClick={() => setShowAnswer(!showAnswer)}  
-                disabled={wrongIndicator}
-              >
-                {
-                  showAnswer 
-                    ? (
-                      <Hidden size="30px" color="#ffffff" />
-                    ) : (
-                      <Reveal size="30px" color="#ffffff" />
-                    )
-                }
-              </button>
             </div>
       </div>
 

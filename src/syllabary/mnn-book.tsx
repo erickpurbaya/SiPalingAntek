@@ -54,6 +54,14 @@ export type Expression ={
     politeness: "polite" | "casual"
 }
 
+export const JLPTLevelColor = {
+    N1: '229,31,31',
+    N2: '242,161,52',
+    N3: '247,227,121',
+    N4: '187,219,68',
+    N5: '68,206,27'
+}
+
 // export type VerbForm = {
 //     base: string,
 //     dictionary: string;
@@ -99,7 +107,7 @@ export const WordList: Word[] = [
     { id: null, kanji: "上手に", kana: "じょうずに", meaning: "skillfully", level: "N4", class: "Adverb", chapter: 36, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "dengan pandai" },
     { id: null, kanji: "ほとんど", kana: "ほとんど", meaning: "almost / mostly", level: "N4", class: "Adverb", chapter: 36, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "sebagian besar" },
     { id: null, kanji: "お客様", kana: "おきゃくさま", meaning: "guest / customer (honorific)", level: "N3", class: "Noun", chapter: 36, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "tamu" },
-    { id: null, kanji: "特別[な]", kana: "とくべつ[な]", meaning: "special", level: "N3", class: "Na-Adjective", chapter: 36, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "khusus, spesial" },
+    { id: null, kanji: "特別", kana: "とくべつ", meaning: "special", level: "N3", class: "Na-Adjective", chapter: 36, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "khusus, spesial" },
     { id: null, kanji: "していらっしゃいます", kana: "していらっしゃいます", meaning: "to be doing (honorific)", level: "N3", class: "Expression", chapter: 36, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "melakukan (bentuk hormat)" },
     { id: null, kanji: "水泳", kana: "すいえい", meaning: "swimming", level: "N3", class: "Noun", chapter: 36, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "renang" },
     { id: null, kanji: "違います", kana: "ちがいます", meaning: "to be different / wrong", level: "N5", class: "Verb", chapter: 36, verbGroup: "1", onReading: [], kunReading: [], context: "", indonesian: "salah, tidak benar" },
@@ -156,7 +164,7 @@ export const WordList: Word[] = [
     { id: null, kanji: "本物", kana: "ほんもの", meaning: "genuine / real thing", level: "N3", class: "Noun", chapter: 37, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "asli" },
     { id: null, kanji: "金", kana: "きん", meaning: "gold", level: "N5", class: "Noun", chapter: 37, verbGroup: "-", onReading: ["きん"], kunReading: ["かね"], context: "", indonesian: "emas" },
     { id: null, kanji: "美しい", kana: "うつくしい", meaning: "beautiful", level: "N3", class: "I-Adjective", chapter: 37, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "indah, elok" },
-    { id: null, kanji: "豪華[な]", kana: "ごうか[な]", meaning: "luxurious / gorgeous", level: "N3", class: "Na-Adjective", chapter: 37, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "mewah" },
+    { id: null, kanji: "豪華", kana: "ごうか", meaning: "luxurious / gorgeous", level: "N3", class: "Na-Adjective", chapter: 37, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "mewah" },
     { id: null, kanji: "彫刻", kana: "ちょうこく", meaning: "sculpture / carving", level: "N2", class: "Noun", chapter: 37, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "ukiran, pahatan" },
     { id: null, kanji: "伝統", kana: "でんとう", meaning: "tradition", level: "N3", class: "Noun", chapter: 37, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "tradisi" },
     { id: null, kanji: "眠ります", kana: "ねむります", meaning: "to sleep", level: "N3", class: "Verb", chapter: 37, verbGroup: "1", onReading: [], kunReading: [], context: "", indonesian: "tidur" },
@@ -210,11 +218,11 @@ export const WordList: Word[] = [
     { id: null, kanji: "優しい", kana: "やさしい", meaning: "kind / gentle", level: "N5", class: "I-Adjective", chapter: 38, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "baik hati" },
     { id: null, kanji: "世話をします", kana: "せわをします", meaning: "to take care of", level: "N3", class: "Verb", chapter: 38, verbGroup: "3", onReading: [], kunReading: [], context: "", indonesian: "merawat" },
     { id: null, kanji: "時間がたちます", kana: "じかんがたちます", meaning: "time passes", level: "N3", class: "Expression", chapter: 38, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "waktu berlalu" },
-    { id: null, kanji: "大好き[な]", kana: "だいすき[な]", meaning: "to like very much", level: "N5", class: "Na-Adjective", chapter: 38, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "suka sekali" },
+    { id: null, kanji: "大好き", kana: "だいすき", meaning: "to like very much", level: "N5", class: "Na-Adjective", chapter: 38, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "suka sekali" },
     { id: null, kanji: "点", kana: "てん", meaning: "point / score", level: "N4", class: "Noun", chapter: 38, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "poin" },
     { id: null, kanji: "気が強い", kana: "きがつよい", meaning: "strong-willed / fierce", level: "N3", class: "Expression", chapter: 38, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "bersifat keras, galak" },
     { id: null, kanji: "けんかします", kana: "けんかします", meaning: "to quarrel / fight", level: "N4", class: "Verb", chapter: 38, verbGroup: "3", onReading: [], kunReading: [], context: "", indonesian: "bertengkar" },
-    { id: null, kanji: "不思議[な]", kana: "ふしぎ[な]", meaning: "strange / mysterious", level: "N3", class: "Na-Adjective", chapter: 38, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "aneh" },
+    { id: null, kanji: "不思議", kana: "ふしぎ", meaning: "strange / mysterious", level: "N3", class: "Na-Adjective", chapter: 38, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "aneh" },
     { id: null, kanji: "年齢", kana: "ねんれい", meaning: "age", level: "N3", class: "Noun", chapter: 38, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "usia, umur" },
     { id: null, kanji: "しかた", kana: "しかた", meaning: "way / method", level: "N4", class: "Noun", chapter: 38, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "cara" },
 
@@ -230,8 +238,8 @@ export const WordList: Word[] = [
     { id: null, kanji: "離婚します", kana: "りこんします", meaning: "to divorce", level: "N3", class: "Verb", chapter: 39, verbGroup: "3", onReading: [], kunReading: [], context: "", indonesian: "bercerai" },
     { id: null, kanji: "太ります", kana: "ふとります", meaning: "to gain weight", level: "N4", class: "Verb", chapter: 39, verbGroup: "1", onReading: [], kunReading: [], context: "", indonesian: "menjadi gemuk" },
     { id: null, kanji: "やせます", kana: "やせます", meaning: "to lose weight / become thin", level: "N4", class: "Verb", chapter: 39, verbGroup: "2", onReading: [], kunReading: [], context: "", indonesian: "menjadi kurus" },
-    { id: null, kanji: "複雑[な]", kana: "ふくざつ[な]", meaning: "complicated", level: "N3", class: "Na-Adjective", chapter: 39, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "rumit" },
-    { id: null, kanji: "邪魔[な]", kana: "じゃま[な]", meaning: "in the way / obstructive", level: "N3", class: "Na-Adjective", chapter: 39, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "gangguan" },
+    { id: null, kanji: "複雑", kana: "ふくざつ", meaning: "complicated", level: "N3", class: "Na-Adjective", chapter: 39, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "rumit" },
+    { id: null, kanji: "邪魔", kana: "じゃま", meaning: "in the way / obstructive", level: "N3", class: "Na-Adjective", chapter: 39, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "gangguan" },
     { id: null, kanji: "硬い", kana: "かたい", meaning: "hard", level: "N4", class: "I-Adjective", chapter: 39, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "keras" },
     { id: null, kanji: "軟らかい", kana: "やわらかい", meaning: "soft", level: "N4", class: "I-Adjective", chapter: 39, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "lembut" },
     { id: null, kanji: "汚い", kana: "きたない", meaning: "dirty", level: "N5", class: "I-Adjective", chapter: 39, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "kotor" },
@@ -264,7 +272,7 @@ export const WordList: Word[] = [
     { id: null, kanji: "合います", kana: "あいます", meaning: "to suit / fit / match", level: "N5", class: "Verb", chapter: 39, verbGroup: "1", onReading: [], kunReading: [], context: "", indonesian: "cocok" },
     { id: null, kanji: "今では", kana: "いまでは", meaning: "now / nowadays", level: "N3", class: "Expression", chapter: 39, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "sekarang" },
     { id: null, kanji: "成人式", kana: "せいじんしき", meaning: "Coming-of-Age ceremony", level: "N2", class: "Noun", chapter: 39, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "upacara pendewasaan" },
-    { id: null, kanji: "伝統的[な]", kana: "でんとうてき[な]", meaning: "traditional", level: "N3", class: "Na-Adjective", chapter: 39, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "secara tradisional" },
+    { id: null, kanji: "伝統的", kana: "でんとうてき", meaning: "traditional", level: "N3", class: "Na-Adjective", chapter: 39, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "secara tradisional" },
 
     // Lesson 40
     { id: null, kanji: "数えます", kana: "かぞえます", meaning: "to count", level: "N4", class: "Verb", chapter: 40, verbGroup: "2", onReading: [], kunReading: [], context: "", indonesian: "menghitung" },
@@ -278,7 +286,7 @@ export const WordList: Word[] = [
     { id: null, kanji: "うまくいきます", kana: "うまくいきます", meaning: "to go well / succeed", level: "N3", class: "Expression", chapter: 40, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "berhasil dengan baik" },
     { id: null, kanji: "出ます", kana: "でます", meaning: "to be given / appear (exam question)", level: "N5", class: "Verb", chapter: 40, verbGroup: "2", onReading: [], kunReading: [], context: "問題が出ます", indonesian: "diberikan (soal ujian)" },
     { id: null, kanji: "相談します", kana: "そうだんします", meaning: "to consult", level: "N4", class: "Verb", chapter: 40, verbGroup: "3", onReading: [], kunReading: [], context: "", indonesian: "berkonsultasi" },
-    { id: null, kanji: "必要[な]", kana: "ひつよう[な]", meaning: "necessary", level: "N4", class: "Na-Adjective", chapter: 40, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "perlu" },
+    { id: null, kanji: "必要", kana: "ひつよう", meaning: "necessary", level: "N4", class: "Na-Adjective", chapter: 40, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "perlu" },
     { id: null, kanji: "天気予報", kana: "てんきよほう", meaning: "weather forecast", level: "N4", class: "Noun", chapter: 40, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "prakiraan cuaca" },
     { id: null, kanji: "忘年会", kana: "ぼうねんかい", meaning: "year-end party", level: "N2", class: "Noun", chapter: 40, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "pesta akhir tahun" },
     { id: null, kanji: "新年会", kana: "しんねんかい", meaning: "New Year's party", level: "N2", class: "Noun", chapter: 40, verbGroup: "-", onReading: [], kunReading: [], context: "", indonesian: "pesta tahun baru" },

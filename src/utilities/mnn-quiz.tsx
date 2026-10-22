@@ -32,27 +32,37 @@ export const getKanaList = (type: string, variation: string[] = ['basic']): Kana
     )
 }
 
-export function getRandomItem<T>(items: T[]): T {
-  return items[Math.floor(Math.random() * items.length)];
+export function getRandomItem(items: Word[]): Word {
+  const eligibleItems = items.filter(
+    item => item.kanji !== item.kana
+  );
+
+  if (eligibleItems.length === 0) {
+    throw new Error("No eligible words found");
+  }
+
+  return eligibleItems[Math.floor(Math.random() * eligibleItems.length)];
 }
 
-export function generateQuestion<T extends Kana | Word>(collection: T[], type: "kana" | "kanji" = "kana", requestedKanji: string[] = []) {
+export function generateQuestion<T extends Word>(collection: T[], type: "kana" | "kanji" = "kana", requestedKanji: string[] = []) {
   const filteredCollection = requestedKanji.length == 0 ? collection
     : collection.filter(item => requestedKanji.includes((item as Word).kanji) ) 
 
-  const correct: Kana | Word = 
+  const correct: Word = 
     // filteredCollection[0]
     getRandomItem(filteredCollection);
 
   const wrongAnswers = shuffle(
     collection.filter(item => {
       if (type === "kana") {
+        // return item.kana !== correct.kana;
         return item.kana !== correct.kana;
       }
 
       return isKanji(item) &&
              isKanji(correct) &&
-             item.kanji !== correct.kanji;
+             item.kanji !== correct.kanji
+             && item.class == correct.class;
     })
   ).slice(0, 3);
 
