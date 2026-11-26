@@ -16,14 +16,24 @@
   --animate-rise: rise 0.3s ease-in-out;
   --animate-sink-disapper: sink-disappear 0.5s ease-in-out;
   --animate-big-to-disappear: big-to-disappear 1s ease-in-out;
-  --animate-slide-left-disappear: slide-left-disappear 0.3s ease-in-out forwards;
+  --animate-slide-left-disappear: slide-left-disappear 0.5s ease-in-out forwards;
   --animate-slide-left-appear: slide-left-appear 0.3s ease-in-out forwards;
 
     @keyframes slide-left-disappear {
         0% {
             opacity: 1;
         }
+        20% {
+            transform: scale(1.1);
+        }
+        40% {
+            color: var(--color-green-500);
+        }
+        80% {
+            transform: scale(1);
+        }
         100% {
+            color: inherit;
             transform: translateX(-20px);
             opacity: 0;
         }

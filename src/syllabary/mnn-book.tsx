@@ -1,4 +1,4 @@
-type VerbGroup = '1' | '2' | '3';
+type VerbGroup = '1' | '2' | '3' | 'Ichidan' | 'Godan' | 'Suru';
 type JLPTLevel = 'N5' | 'N4' | 'N3' | 'N2' | 'N1' | '-';
 type WordClass =
   | 'Verb'
